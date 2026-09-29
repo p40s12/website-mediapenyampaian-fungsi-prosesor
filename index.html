@@ -1,0 +1,7144 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Mengenal Cara Kerja Prosesor</title>
+
+<style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+:root{
+    --bg:#08161a;
+    --panel:#102126;
+    --panel2:#153039;
+    --cyan:#6ee7d8;
+    --white:#edf8f9;
+    --muted:#82979b;
+    --dim:#52676b;
+    --line:rgba(255,255,255,.08);
+}
+
+html,
+body{
+    width:100%;
+    min-height:100%;
+}
+
+body{
+    font-family:"DM Sans",Arial,sans-serif;
+    color:var(--white);
+
+    background:
+        radial-gradient(
+            circle at 80% 15%,
+            rgba(70,220,230,.12),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 10% 90%,
+            rgba(30,150,145,.09),
+            transparent 30%
+        ),
+        var(--bg);
+
+    overflow-x:hidden;
+    overflow-y:auto;
+}
+
+
+/* =========================================================
+   FONTS
+========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+header{
+    position:fixed;
+    z-index:100;
+
+    top:0;
+    left:0;
+
+    width:100%;
+    height:72px;
+
+    padding:0 42px;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    border-bottom:1px solid var(--line);
+
+    background:rgba(7,16,18,.86);
+
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.brand-chip{
+    width:37px;
+    height:37px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    border-radius:9px;
+
+    background:#e8f9fa;
+    color:#071012;
+
+    font-family:"Space Grotesk",Arial,sans-serif;
+    font-size:8px;
+    font-weight:700;
+}
+
+.brand-title{
+    font-family:"Space Grotesk",Arial,sans-serif;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:2px;
+}
+
+.brand-sub{
+    margin-top:3px;
+
+    color:#53696d;
+
+    font-size:7px;
+    letter-spacing:2px;
+}
+
+.header-title{
+    color:#61767a;
+
+    font-size:8px;
+    font-weight:700;
+
+    letter-spacing:3px;
+}
+
+.status{
+    color:#6f8589;
+
+    font-size:8px;
+
+    letter-spacing:2px;
+}
+
+.status::before{
+    content:"";
+
+    display:inline-block;
+
+    width:6px;
+    height:6px;
+
+    margin-right:8px;
+
+    border-radius:50%;
+
+    background:var(--cyan);
+
+    box-shadow:
+        0 0 14px var(--cyan);
+}
+
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+main{
+    position:relative;
+
+    width:100%;
+    min-height:100vh;
+}
+
+
+/* =========================================================
+   PAGE / SLIDE
+========================================================= */
+
+.page{
+    position:absolute;
+
+    top:0;
+    left:0;
+
+    width:100%;
+    min-height:100vh;
+
+    padding:
+        100px
+        8%
+        100px;
+
+    opacity:0;
+    visibility:hidden;
+
+    transform:translateY(25px);
+
+    transition:
+        opacity .55s ease,
+        transform .7s cubic-bezier(.2,.8,.2,1),
+        filter .55s ease;
+
+    filter:blur(4px);
+
+    overflow-y:auto;
+    overflow-x:hidden;
+}
+
+.page.active{
+    opacity:1;
+    visibility:visible;
+
+    transform:translateY(0);
+
+    filter:blur(0);
+}
+
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.hero{
+    display:grid;
+
+    grid-template-columns:
+        minmax(0,1fr)
+        minmax(0,1fr);
+
+    align-items:center;
+
+    gap:60px;
+
+    max-width:1400px;
+
+    margin:auto;
+}
+
+.eyebrow{
+    display:flex;
+    align-items:center;
+
+    gap:9px;
+
+    color:#6d8589;
+
+    font-size:8px;
+    font-weight:700;
+
+    letter-spacing:3px;
+}
+
+.eyebrow::before{
+    content:"";
+
+    width:25px;
+    height:2px;
+
+    background:var(--cyan);
+}
+
+h1{
+    margin-top:20px;
+
+    font-family:"Space Grotesk",Arial,sans-serif;
+
+    font-size:clamp(48px,6vw,84px);
+
+    line-height:.91;
+
+    letter-spacing:-5px;
+}
+
+.cyan{
+    color:var(--cyan);
+}
+
+.hero-text{
+    max-width:590px;
+
+    margin-top:28px;
+
+    color:var(--muted);
+
+    font-size:13px;
+
+    line-height:1.9;
+}
+
+.start{
+    margin-top:28px;
+
+    height:49px;
+
+    padding:0 18px;
+
+    display:flex;
+    align-items:center;
+
+    gap:30px;
+
+    border:0;
+    border-radius:10px;
+
+    background:#e9f9fa;
+    color:#071012;
+
+    font-size:9px;
+    font-weight:800;
+
+    letter-spacing:1px;
+
+    cursor:pointer;
+
+    transition:.3s;
+}
+
+.start:hover{
+    transform:translateY(-4px);
+
+    box-shadow:
+        0 18px 40px rgba(60,220,230,.14);
+}
+
+.start span{
+    font-size:18px;
+}
+
+.meta{
+    display:flex;
+
+    gap:40px;
+
+    margin-top:30px;
+}
+
+.meta-item small{
+    display:block;
+
+    color:#52696d;
+
+    font-size:7px;
+
+    letter-spacing:2px;
+}
+
+.meta-item strong{
+    display:block;
+
+    margin-top:5px;
+
+    color:#bad0d3;
+
+    font-size:9px;
+}
+
+
+/* =========================================================
+   CPU VISUAL
+========================================================= */
+
+.cpu-area{
+    position:relative;
+
+    height:480px;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    perspective:1000px;
+}
+
+.cpu-shadow{
+    position:absolute;
+
+    width:300px;
+    height:55px;
+
+    margin-top:310px;
+
+    border-radius:50%;
+
+    background:rgba(0,0,0,.45);
+
+    filter:blur(25px);
+}
+
+.cpu{
+    position:relative;
+
+    width:280px;
+    height:280px;
+
+    transform-style:preserve-3d;
+
+    animation:floatCPU 4s ease-in-out infinite;
+}
+
+@keyframes floatCPU{
+
+    0%,
+    100%{
+        transform:
+            translateY(0)
+            rotateX(53deg)
+            rotateZ(-35deg);
+    }
+
+    50%{
+        transform:
+            translateY(-17px)
+            rotateX(53deg)
+            rotateZ(-35deg);
+    }
+}
+
+.cpu-body{
+    position:absolute;
+
+    inset:0;
+
+    border-radius:18px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #26383c,
+            #0b171a 55%,
+            #1a292d
+        );
+
+    border:3px solid #35484c;
+
+    box-shadow:
+        inset 0 0 35px rgba(255,255,255,.035),
+        0 35px 50px rgba(0,0,0,.4);
+}
+
+.cpu-surface{
+    position:absolute;
+
+    width:220px;
+    height:220px;
+
+    left:30px;
+    top:30px;
+
+    border-radius:13px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #dfe7e7,
+            #929ea0
+        );
+
+    border:3px solid #f3f7f7;
+
+    transform:translateZ(23px);
+
+    box-shadow:
+        inset 0 0 25px rgba(0,0,0,.13);
+}
+
+.cpu-core{
+    position:absolute;
+
+    width:108px;
+    height:108px;
+
+    left:86px;
+    top:86px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #193036,
+            #071215
+        );
+
+    border:1px solid rgba(103,232,239,.7);
+
+    border-radius:5px;
+
+    transform:translateZ(34px);
+
+    box-shadow:
+        0 0 28px rgba(103,232,239,.13);
+}
+
+.core-lines{
+    position:absolute;
+
+    background:rgba(103,232,239,.55);
+}
+
+.core-lines.h{
+    left:12px;
+    right:12px;
+
+    height:1px;
+}
+
+.core-lines.v{
+    top:12px;
+    bottom:12px;
+
+    width:1px;
+}
+
+.h1{top:29px}
+.h2{top:53px}
+.h3{top:77px}
+
+.v1{left:28px}
+.v2{left:53px}
+.v3{left:77px}
+
+.pin{
+    position:absolute;
+
+    background:#c5a74f;
+
+    border-radius:2px;
+
+    transform:translateZ(15px);
+}
+
+.pin.t,
+.pin.b{
+    width:13px;
+    height:4px;
+}
+
+.pin.l,
+.pin.r{
+    width:4px;
+    height:13px;
+}
+
+.pin.t{
+    top:-8px;
+}
+
+.pin.b{
+    bottom:-8px;
+}
+
+.pin.l{
+    left:-8px;
+}
+
+.pin.r{
+    right:-8px;
+}
+
+
+/* =========================================================
+   SECTION TITLE
+========================================================= */
+
+.section-title{
+    max-width:1000px;
+
+    margin:auto;
+}
+
+.section-title h2{
+    margin-top:17px;
+
+    font-family:"Space Grotesk",Arial,sans-serif;
+
+    font-size:clamp(40px,5vw,67px);
+
+    line-height:.96;
+
+    letter-spacing:-4px;
+}
+
+.section-title p{
+    max-width:700px;
+
+    margin-top:18px;
+
+    color:var(--muted);
+
+    font-size:12px;
+
+    line-height:1.85;
+}
+
+
+/* =========================================================
+   EXPLANATION
+========================================================= */
+
+.explanation{
+    max-width:1100px;
+
+    margin:38px auto 0;
+
+    display:grid;
+
+    grid-template-columns:
+        minmax(0,1.4fr)
+        minmax(260px,.6fr);
+
+    gap:15px;
+}
+
+.explain-main{
+    position:relative;
+
+    min-height:300px;
+
+    padding:34px;
+
+    border:1px solid var(--line);
+
+    border-radius:24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(20,43,48,.9),
+            rgba(8,18,21,.96)
+        );
+
+    overflow:hidden;
+}
+
+.explain-main::after{
+    content:"CPU";
+
+    position:absolute;
+
+    right:-25px;
+    bottom:-50px;
+
+    font-family:"Space Grotesk",Arial,sans-serif;
+
+    font-size:180px;
+
+    font-weight:700;
+
+    color:rgba(103,232,239,.025);
+}
+
+.explain-number{
+    color:var(--cyan);
+
+    font-family:"Space Grotesk",Arial,sans-serif;
+
+    font-size:10px;
+    font-weight:700;
+
+    letter-spacing:3px;
+}
+
+.explain-main h3{
+    margin-top:20px;
+
+    font-family:"Space Grotesk",Arial,sans-serif;
+
+    font-size:31px;
+}
+
+.explain-main p{
+    position:relative;
+
+    z-index:2;
+
+    max-width:700px;
+
+    margin-top:15px;
+
+    color:#8aa0a4;
+
+    font-size:11px;
+
+    line-height:1.9;
+}
+
+.highlight{
+    position:relative;
+
+    z-index:2;
+
+    margin-top:22px;
+
+    padding:15px 18px;
+
+    border-left:2px solid var(--cyan);
+
+    background:
+        rgba(103,232,239,.045);
+
+    color:#b9d2d5;
+
+    font-size:10px;
+
+    line-height:1.7;
+}
+
+.side-info{
+    display:grid;
+
+    gap:15px;
+}
+
+.info-box{
+    padding:25px;
+
+    border:1px solid var(--line);
+
+    border-radius:20px;
+
+    background:
+        rgba(14,31,35,.8);
+
+    transition:.3s;
+}
+
+.info-box:hover{
+    transform:translateY(-5px);
+
+    border-color:
+        rgba(103,232,239,.25);
+}
+
+.info-icon{
+    color:var(--cyan);
+
+    font-family:"Space Grotesk",Arial,sans-serif;
+
+    font-size:24px;
+}
+
+.info-box small{
+    display:block;
+
+    margin-top:17px;
+
+    color:#587075;
+
+    font-size:7px;
+
+    letter-spacing:2px;
+}
+
+.info-box strong{
+    display:block;
+
+    margin-top:7px;
+
+    font-family:"Space Grotesk",Arial,sans-serif;
+
+    font-size:17px;
+}
+
+.info-box p{
+    margin-top:7px;
+
+    color:#71878b;
+
+    font-size:9px;
+
+    line-height:1.7;
+}
+
+
+/* =========================================================
+   COMPONENTS
+========================================================= */
+
+.components{
+    max-width:1100px;
+
+    margin:38px auto 0;
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(4,minmax(0,1fr));
+
+    gap:13px;
+}
+
+.component{
+    position:relative;
+
+    min-height:230px;
+
+    padding:24px;
+
+    border:1px solid var(--line);
+
+    border-radius:21px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(17,39,44,.9),
+            rgba(7,17,20,.96)
+        );
+
+    text-align:left;
+
+    cursor:pointer;
+
+    transition:
+        transform .35s,
+        border-color .35s,
+        box-shadow .35s;
+
+    transform-style:preserve-3d;
+}
+
+.component:hover{
+    transform:translateY(-8px);
+
+    border-color:
+        rgba(103,232,239,.3);
+
+    box-shadow:
+        0 20px 45px rgba(0,0,0,.28);
+}
+
+.component::before{
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    border-radius:inherit;
+
+    pointer-events:none;
+
+    background:
+        radial-gradient(
+            circle at var(--mx,50%) var(--my,50%),
+            rgba(103,232,239,.13),
+            transparent 35%
+        );
+
+    opacity:0;
+
+    transition:opacity .25s;
+}
+
+.component:hover::before{
+    opacity:1;
+}
+
+.component-number{
+    color:#536a6f;
+
+    font-size:7px;
+
+    letter-spacing:2px;
+}
+
+.component-icon{
+    margin-top:25px;
+
+    color:var(--cyan);
+
+    font-family:"Space Grotesk",Arial,sans-serif;
+
+    font-size:30px;
+}
+
+.component h3{
+    margin-top:14px;
+
+    font-family:"Space Grotesk",Arial,sans-serif;
+
+    font-size:15px;
+}
+
+.component p{
+    margin-top:8px;
+
+    color:#748b90;
+
+    font-size:9px;
+
+    line-height:1.7;
+}
+
+.component-arrow{
+    position:absolute;
+
+    right:19px;
+    bottom:17px;
+
+    color:#536a6f;
+
+    transition:.3s;
+}
+
+.component:hover .component-arrow{
+    color:var(--cyan);
+
+    transform:translateX(5px);
+}
+
+
+/* =========================================================
+   CPU PROCESS
+========================================================= */
+
+.process-area{
+    max-width:1080px;
+
+    margin:42px auto 0;
+}
+
+
+/* =========================================================
+   INTERACTIVE CPU SIMULATION
+========================================================= */
+
+.cpu-simulation{
+    position:relative;
+
+    margin-top:30px;
+
+    padding:25px;
+
+    border:1px solid rgba(103,232,239,.13);
+
+    border-radius:24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(15,37,42,.94),
+            rgba(5,15,18,.97)
+        );
+
+    overflow:hidden;
+
+    box-shadow:
+        inset 0 0 60px rgba(103,232,239,.025),
+        0 20px 50px rgba(0,0,0,.2);
+}
+
+.cpu-simulation::before{
+    content:"CPU INSTRUCTION FLOW";
+
+    position:absolute;
+
+    right:25px;
+    top:20px;
+
+    color:rgba(103,232,239,.25);
+
+    font-family:"Space Grotesk",Arial,sans-serif;
+
+    font-size:7px;
+
+    letter-spacing:3px;
+}
+
+.sim-header{
+    position:relative;
+
+    z-index:2;
+
+    max-width:650px;
+}
+
+.sim-label{
+    color:var(--cyan);
+
+    font-size:7px;
+    font-weight:800;
+
+    letter-spacing:3px;
+}
+
+.sim-header h3{
+    margin-top:9px;
+
+    font-family:"Space Grotesk",Arial,sans-serif;
+
+    font-size:25px;
+}
+
+.sim-header p{
+    margin-top:8px;
+
+    color:#71898d;
+
+    font-size:9px;
+
+    line-height:1.7;
+}
+
+
+/* =========================================================
+   COMMAND
+========================================================= */
+
+.command-box{
+    position:relative;
+
+    z-index:2;
+
+    margin-top:20px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    padding:12px;
+
+    border:1px solid rgba(255,255,255,.06);
+
+    border-radius:13px;
+
+    background:rgba(3,11,13,.55);
+}
+
+.command-icon{
+    width:38px;
+    height:38px;
+
+    flex-shrink:0;
+
+    display:grid;
+    place-items:center;
+
+    border:1px solid rgba(103,232,239,.2);
+
+    border-radius:9px;
+
+    color:var(--cyan);
+
+    background:rgba(103,232,239,.04);
+
+    font-family:"Space Grotesk",Arial,sans-serif;
+
+    font-size:17px;
+}
+
+.command-text{
+    flex:1;
+
+    min-width:0;
+}
+
+.command-text small{
+    display:block;
+
+    color:#536c70;
+
+    font-size:6px;
+
+    letter-spacing:2px;
+}
+
+.command-text strong{
+    display:block;
+
+    margin-top:4px;
+
+    color:#d9eeee;
+
+    font-family:"Space Grotesk",Arial,sans-serif;
+
+    font-size:12px;
+}
+
+.sim-button{
+    height:39px;
+
+    padding:0 15px;
+
+    flex-shrink:0;
+
+    border:1px solid rgba(103,232,239,.22);
+
+    border-radius:9px;
+
+    background:rgba(103,232,239,.07);
+
+    color:#9cebef;
+
+    font-size:7px;
+    font-weight:800;
+
+    letter-spacing:1.5px;
+
+    cursor:pointer;
+
+    transition:.3s;
+}
+
+.sim-button:hover{
+    background:rgba(103,232,239,.13);
+
+    border-color:rgba(103,232,239,.45);
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 8px 25px rgba(103,232,239,.1);
+}
+
+.sim-button:disabled{
+    opacity:.45;
+
+    cursor:not-allowed;
+
+    transform:none;
+}
+
+
+/* =========================================================
+   CURVED DATA ROUTE
+========================================================= */
+
+.sim-track{
+    position:relative;
+
+    z-index:2;
+
+    width:100%;
+
+    height:290px;
+
+    margin-top:22px;
+}
+
+.sim-route-svg{
+    position:absolute;
+
+    inset:0;
+
+    width:100%;
+    height:100%;
+
+    overflow:visible;
+
+    pointer-events:none;
+}
+
+.sim-route-path{
+    fill:none;
+
+    stroke:rgba(103,232,239,.13);
+
+    stroke-width:2;
+
+    stroke-linecap:round;
+
+    stroke-linejoin:round;
+}
+
+.sim-route-glow{
+    fill:none;
+
+    stroke:rgba(103,232,239,.08);
+
+    stroke-width:9;
+
+    stroke-linecap:round;
+
+    stroke-linejoin:round;
+
+    filter:url(#routeGlow);
+}
+
+.sim-route-progress{
+    fill:none;
+
+    stroke:rgba(103,232,239,.55);
+
+    stroke-width:2;
+
+    stroke-linecap:round;
+
+    stroke-linejoin:round;
+
+    stroke-dasharray:1000;
+
+    stroke-dashoffset:1000;
+
+    transition:
+        stroke-dashoffset .5s ease;
+}
+
+
+/* =========================================================
+   MOVING DATA CORE
+========================================================= */
+
+.command-packet{
+    transform-box:fill-box;
+
+    transform-origin:center;
+
+    opacity:0;
+
+    transition:opacity .5s ease;
+}
+
+.command-packet.visible{
+    opacity:1;
+}
+
+.packet-outer{
+    fill:rgba(103,232,239,.035);
+
+    stroke:rgba(103,232,239,.2);
+
+    stroke-width:1;
+
+    animation:
+        packetPulse
+        1.8s
+        ease-in-out
+        infinite;
+}
+
+.packet-middle{
+    fill:none;
+
+    stroke:rgba(103,232,239,.45);
+
+    stroke-width:1;
+
+    stroke-dasharray:4 5;
+
+    animation:
+        packetRotate
+        2.4s
+        linear
+        infinite;
+}
+
+.packet-core{
+    fill:var(--cyan);
+
+    filter:url(#packetGlow);
+}
+
+.packet-diamond{
+    fill:#eaffff;
+
+    opacity:.95;
+}
+
+@keyframes packetPulse{
+
+    0%,
+    100%{
+        transform:scale(.75);
+
+        opacity:.35;
+    }
+
+    50%{
+        transform:scale(1.15);
+
+        opacity:.9;
+    }
+
+}
+
+@keyframes packetRotate{
+
+    to{
+        transform:rotate(360deg);
+    }
+
+}
+
+
+/* =========================================================
+   NODES
+========================================================= */
+
+.sim-node{
+    position:absolute;
+
+    z-index:5;
+
+    width:150px;
+
+    text-align:center;
+
+    transform:
+        translate(-50%,-50%);
+
+    transition:
+        filter .5s ease,
+        opacity .5s ease;
+}
+
+
+/* Slightly irregular route */
+
+.sim-node[data-step="0"]{
+    left:10%;
+    top:31%;
+}
+
+.sim-node[data-step="1"]{
+    left:30%;
+    top:65%;
+}
+
+.sim-node[data-step="2"]{
+    left:50%;
+    top:27%;
+}
+
+.sim-node[data-step="3"]{
+    left:70%;
+    top:63%;
+}
+
+.sim-node[data-step="4"]{
+    left:90%;
+    top:31%;
+}
+
+.sim-node-circle{
+    position:relative;
+
+    width:49px;
+    height:49px;
+
+    margin:auto;
+
+    display:grid;
+    place-items:center;
+
+    border:1px solid rgba(103,232,239,.18);
+
+    border-radius:50%;
+
+    background:#09191d;
+
+    color:#526d72;
+
+    font-family:"Space Grotesk",Arial,sans-serif;
+
+    font-size:8px;
+    font-weight:700;
+
+    transition:
+        border-color .5s,
+        color .5s,
+        background .5s,
+        box-shadow .5s,
+        transform .5s;
+}
+
+.sim-node-circle::after{
+    content:"";
+
+    position:absolute;
+
+    inset:-6px;
+
+    border:1px solid rgba(103,232,239,.08);
+
+    border-radius:50%;
+
+    opacity:0;
+
+    transform:scale(.7);
+
+    transition:.5s;
+}
+
+.sim-node-title{
+    margin-top:10px;
+
+    color:#6e878b;
+
+    font-size:7px;
+    font-weight:800;
+
+    letter-spacing:1.5px;
+
+    transition:.5s;
+}
+
+.sim-node-desc{
+    max-width:145px;
+
+    margin:6px auto 0;
+
+    color:#4f676b;
+
+    font-size:7px;
+
+    line-height:1.55;
+
+    transition:.5s;
+}
+
+
+/* Active node */
+
+.sim-node.active .sim-node-circle{
+    border-color:var(--cyan);
+
+    color:var(--cyan);
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(103,232,239,.16),
+            rgba(7,20,23,.98)
+        );
+
+    box-shadow:
+        0 0 25px rgba(103,232,239,.18),
+        inset 0 0 18px rgba(103,232,239,.08);
+
+    transform:scale(1.1);
+}
+
+.sim-node.active .sim-node-circle::after{
+    opacity:1;
+
+    transform:scale(1);
+
+    animation:
+        nodeRing
+        1.6s
+        ease-out
+        infinite;
+}
+
+@keyframes nodeRing{
+
+    0%{
+        transform:scale(.8);
+
+        opacity:.7;
+    }
+
+    100%{
+        transform:scale(1.35);
+
+        opacity:0;
+    }
+
+}
+
+.sim-node.active .sim-node-title{
+    color:var(--cyan);
+}
+
+.sim-node.active .sim-node-desc{
+    color:#829da1;
+}
+
+
+/* Completed nodes */
+
+.sim-node.done .sim-node-circle{
+    border-color:rgba(103,232,239,.48);
+
+    color:#9becef;
+
+    background:rgba(103,232,239,.06);
+
+    box-shadow:
+        0 0 16px rgba(103,232,239,.08);
+}
+
+.sim-node.done .sim-node-title{
+    color:#719397;
+}
+
+
+/* =========================================================
+   EXPLANATION
+========================================================= */
+
+.sim-explanation{
+    position:relative;
+
+    z-index:2;
+
+    margin-top:2px;
+
+    min-height:105px;
+
+    padding:17px 19px;
+
+    border-left:2px solid rgba(103,232,239,.25);
+
+    border-radius:0 13px 13px 0;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(103,232,239,.045),
+            rgba(103,232,239,.012),
+            transparent
+        );
+
+    transition:
+        border-color .4s,
+        background .4s;
+}
+
+.sim-explanation.changing{
+    animation:
+        explanationIn
+        .55s
+        ease-out;
+}
+
+@keyframes explanationIn{
+
+    0%{
+        opacity:.25;
+
+        transform:translateY(6px);
+    }
+
+    100%{
+        opacity:1;
+
+        transform:translateY(0);
+    }
+
+}
+
+.sim-explanation-label{
+    color:#536e72;
+
+    font-size:6px;
+
+    font-weight:800;
+
+    letter-spacing:2px;
+}
+
+.sim-explanation h4{
+    margin-top:5px;
+
+    color:#cce9eb;
+
+    font-family:"Space Grotesk",Arial,sans-serif;
+
+    font-size:15px;
+}
+
+.sim-explanation p{
+    max-width:800px;
+
+    margin-top:5px;
+
+    color:#718b8f;
+
+    font-size:9px;
+
+    line-height:1.7;
+}
+
+.sim-status{
+    margin-top:14px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:10px;
+
+    color:#4e676b;
+
+    font-size:6px;
+
+    letter-spacing:2px;
+}
+
+.sim-status strong{
+    color:var(--cyan);
+}
+
+
+/* =========================================================
+   EXISTING PROCESS STEPS
+========================================================= */
+
+.process-steps{
+    position:relative;
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(3,minmax(0,1fr));
+
+    gap:25px;
+
+    margin-top:35px;
+}
+
+.process-line{
+    position:absolute;
+
+    top:31px;
+
+    left:14%;
+    right:14%;
+
+    height:1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(103,232,239,.4),
+            transparent
+        );
+}
+
+.process-step{
+    position:relative;
+
+    text-align:center;
+}
+
+.process-circle{
+    width:63px;
+    height:63px;
+
+    margin:auto;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    border:1px solid rgba(103,232,239,.4);
+
+    border-radius:50%;
+
+    background:#0b1b1f;
+
+    color:var(--cyan);
+
+    font-family:"Space Grotesk",Arial,sans-serif;
+
+    font-weight:700;
+
+    box-shadow:
+        0 0 30px rgba(103,232,239,.06);
+}
+
+.process-step small{
+    display:block;
+
+    margin-top:18px;
+
+    color:var(--cyan);
+
+    font-size:7px;
+    font-weight:800;
+
+    letter-spacing:3px;
+}
+
+.process-step h3{
+    margin-top:7px;
+
+    font-family:"Space Grotesk",Arial,sans-serif;
+
+    font-size:20px;
+}
+
+.process-step p{
+    max-width:250px;
+
+    margin:9px auto 0;
+
+    color:#72888c;
+
+    font-size:10px;
+
+    line-height:1.75;
+}
+
+.fact-strip{
+    margin-top:40px;
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(3,minmax(0,1fr));
+
+    border:1px solid var(--line);
+
+    border-radius:18px;
+
+    overflow:hidden;
+}
+
+.fact{
+    padding:20px 25px;
+
+    background:rgba(13,30,34,.7);
+
+    border-right:1px solid var(--line);
+}
+
+.fact:last-child{
+    border-right:0;
+}
+
+.fact small{
+    color:#52696d;
+
+    font-size:7px;
+
+    letter-spacing:2px;
+}
+
+.fact strong{
+    display:block;
+
+    margin-top:7px;
+
+    font-family:"Space Grotesk",Arial,sans-serif;
+
+    font-size:12px;
+}
+
+
+/* =========================================================
+   EXAMPLE
+========================================================= */
+
+.example{
+    max-width:1080px;
+
+    margin:35px auto 0;
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(2,minmax(0,1fr));
+
+    gap:15px;
+}
+
+.example-box{
+    min-height:220px;
+
+    padding:31px;
+
+    border:1px solid var(--line);
+
+    border-radius:22px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(18,40,45,.85),
+            rgba(7,17,20,.95)
+        );
+}
+
+.example-label{
+    color:var(--cyan);
+
+    font-size:7px;
+
+    font-weight:800;
+
+    letter-spacing:3px;
+}
+
+.example-box h3{
+    margin-top:25px;
+
+    font-family:"Space Grotesk",Arial,sans-serif;
+
+    font-size:29px;
+
+    line-height:1;
+}
+
+.example-box p{
+    margin-top:15px;
+
+    color:#81979b;
+
+    font-size:10px;
+
+    line-height:1.8;
+}
+
+.flow{
+    grid-column:1/-1;
+
+    padding:17px;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    gap:18px;
+
+    border:1px solid var(--line);
+
+    border-radius:14px;
+
+    background:rgba(13,30,34,.55);
+
+    color:#8fa8ac;
+
+    font-family:"Space Grotesk",Arial,sans-serif;
+
+    font-size:8px;
+
+    letter-spacing:2px;
+}
+
+.flow b{
+    color:var(--cyan);
+}
+
+
+/* =========================================================
+   FINAL
+========================================================= */
+
+.final{
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    text-align:center;
+}
+
+.final-content{
+    max-width:850px;
+
+    margin:auto;
+}
+
+.final-content .eyebrow{
+    justify-content:center;
+}
+
+.final-content h2{
+    margin-top:18px;
+
+    font-family:"Space Grotesk",Arial,sans-serif;
+
+    font-size:clamp(42px,6vw,76px);
+
+    line-height:.96;
+
+    letter-spacing:-4px;
+}
+
+.final-content p{
+    max-width:660px;
+
+    margin:22px auto;
+
+    color:#81979b;
+
+    font-size:12px;
+
+    line-height:1.9;
+}
+
+.final-flow{
+    display:flex;
+
+    justify-content:center;
+    align-items:center;
+
+    gap:17px;
+
+    color:#9bb5b9;
+
+    font-size:8px;
+    font-weight:800;
+
+    letter-spacing:2px;
+}
+
+.final-flow b{
+    color:var(--cyan);
+}
+
+.restart{
+    margin-top:28px;
+
+    padding:12px 18px;
+
+    border:1px solid rgba(103,232,239,.2);
+
+    border-radius:9px;
+
+    background:rgba(103,232,239,.04);
+
+    color:#9ce9ee;
+
+    font-size:8px;
+
+    font-weight:800;
+
+    cursor:pointer;
+}
+
+.credit{
+    margin-top:24px;
+
+    color:#40565a;
+
+    font-size:7px;
+
+    letter-spacing:3px;
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+.navigation{
+    position:fixed;
+
+    z-index:200;
+
+    left:50%;
+    bottom:18px;
+
+    transform:translateX(-50%);
+
+    width:min(530px,calc(100% - 28px));
+
+    height:55px;
+
+    padding:6px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:9px;
+
+    border:1px solid rgba(150,230,235,.11);
+
+    border-radius:17px;
+
+    background:rgba(5,14,16,.92);
+
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+
+    box-shadow:
+        0 20px 50px rgba(0,0,0,.4);
+}
+
+.nav-btn{
+    width:41px;
+    height:41px;
+
+    flex-shrink:0;
+
+    border:0;
+
+    border-radius:11px;
+
+    background:rgba(255,255,255,.035);
+
+    color:#82979b;
+
+    font-size:17px;
+
+    cursor:pointer;
+
+    transition:.25s;
+}
+
+.nav-btn:hover{
+    color:var(--cyan);
+
+    background:rgba(103,232,239,.08);
+
+    transform:scale(1.05);
+}
+
+.nav-middle{
+    flex:1;
+
+    min-width:0;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+}
+
+.nav-middle strong{
+    color:#e4f6f7;
+
+    font-family:"Space Grotesk",Arial,sans-serif;
+
+    font-size:11px;
+}
+
+.progress{
+    flex:1;
+
+    height:2px;
+
+    background:rgba(255,255,255,.08);
+}
+
+.progress-bar{
+    width:16.66%;
+
+    height:100%;
+
+    background:var(--cyan);
+
+    box-shadow:
+        0 0 13px rgba(103,232,239,.5);
+
+    transition:.45s;
+}
+
+.total{
+    color:#50686d;
+
+    font-size:8px;
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.modal{
+    position:fixed;
+
+    z-index:500;
+
+    inset:0;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:center;
+
+    padding:20px;
+
+    background:rgba(1,7,9,.78);
+
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+
+    opacity:0;
+    visibility:hidden;
+
+    transition:.3s;
+}
+
+.modal.show{
+    opacity:1;
+    visibility:visible;
+}
+
+.modal-box{
+    position:relative;
+
+    width:min(540px,100%);
+
+    padding:38px;
+
+    border:1px solid rgba(103,232,239,.2);
+
+    border-radius:23px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #11272d,
+            #071417
+        );
+
+    transform:
+        translateY(20px)
+        scale(.96);
+
+    transition:.35s;
+}
+
+.modal.show .modal-box{
+    transform:
+        translateY(0)
+        scale(1);
+}
+
+.close{
+    position:absolute;
+
+    top:14px;
+    right:14px;
+
+    width:32px;
+    height:32px;
+
+    border:0;
+
+    border-radius:50%;
+
+    background:rgba(255,255,255,.05);
+
+    color:#9ab0b4;
+
+    font-size:20px;
+
+    cursor:pointer;
+}
+
+.modal-label{
+    color:var(--cyan);
+
+    font-size:7px;
+
+    letter-spacing:3px;
+}
+
+.modal-box h2{
+    margin-top:12px;
+
+    font-family:"Space Grotesk",Arial,sans-serif;
+
+    font-size:35px;
+}
+
+.modal-box p{
+    margin-top:17px;
+
+    color:#83999d;
+
+    font-size:11px;
+
+    line-height:1.9;
+}
+
+
+/* =========================================================
+   WOW EFFECTS
+========================================================= */
+
+.ambient-grid{
+    position:fixed;
+    inset:0;
+    z-index:-5;
+    pointer-events:none;
+    opacity:.18;
+
+    background-image:
+        linear-gradient(
+            rgba(103,232,239,.045) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(103,232,239,.045) 1px,
+            transparent 1px
+        );
+
+    background-size:70px 70px;
+
+    mask-image:
+        linear-gradient(
+            to bottom,
+            black,
+            transparent 85%
+        );
+
+    animation:gridDrift 18s linear infinite;
+}
+
+@keyframes gridDrift{
+    from{
+        background-position:0 0,0 0;
+    }
+
+    to{
+        background-position:70px 70px,70px 70px;
+    }
+}
+
+.cursor-glow{
+    position:fixed;
+    z-index:999;
+
+    width:220px;
+    height:220px;
+
+    border-radius:50%;
+
+    pointer-events:none;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(103,232,239,.09),
+            transparent 65%
+        );
+
+    transform:translate(-50%,-50%);
+
+    opacity:0;
+
+    transition:opacity .25s;
+
+    mix-blend-mode:screen;
+}
+
+.particles{
+    position:fixed;
+    inset:0;
+
+    z-index:-2;
+
+    pointer-events:none;
+
+    overflow:hidden;
+}
+
+.particle{
+    position:absolute;
+
+    width:2px;
+    height:2px;
+
+    border-radius:50%;
+
+    background:var(--cyan);
+
+    opacity:.3;
+
+    box-shadow:0 0 8px var(--cyan);
+
+    animation:
+        particleFloat
+        linear
+        infinite;
+}
+
+@keyframes particleFloat{
+
+    0%{
+        transform:translate3d(0,30px,0);
+
+        opacity:0;
+    }
+
+    15%{
+        opacity:.35;
+    }
+
+    85%{
+        opacity:.25;
+    }
+
+    100%{
+        transform:translate3d(30px,-110vh,0);
+
+        opacity:0;
+    }
+}
+
+.scanline{
+    position:fixed;
+
+    left:0;
+    right:0;
+
+    top:-8%;
+
+    height:1px;
+
+    z-index:300;
+
+    pointer-events:none;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(103,232,239,.28),
+            transparent
+        );
+
+    box-shadow:
+        0 0 15px rgba(103,232,239,.15);
+
+    opacity:.25;
+
+    animation:
+        scan
+        9s
+        linear
+        infinite;
+}
+
+@keyframes scan{
+    to{
+        top:108%;
+    }
+}
+
+.page.active .section-title,
+.page.active .explanation,
+.page.active .components,
+.page.active .process-area,
+.page.active .example,
+.page.active .final-content{
+    animation:
+        contentIn
+        .75s
+        cubic-bezier(.2,.8,.2,1)
+        both;
+}
+
+@keyframes contentIn{
+
+    from{
+        opacity:0;
+        transform:translateY(18px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+
+/* =========================================================
+   CPU ENERGY
+========================================================= */
+
+.cpu-core::after{
+    content:"";
+
+    position:absolute;
+
+    inset:18%;
+
+    border:1px solid rgba(103,232,239,.35);
+
+    border-radius:50%;
+
+    opacity:.2;
+
+    animation:
+        corePulse
+        2.4s
+        ease-in-out
+        infinite;
+}
+
+@keyframes corePulse{
+
+    0%,
+    100%{
+        transform:scale(.75);
+        opacity:.12;
+    }
+
+    50%{
+        transform:scale(1.15);
+        opacity:.55;
+    }
+}
+
+.cpu-surface::after{
+    content:"";
+
+    position:absolute;
+
+    left:8%;
+    right:8%;
+
+    height:2px;
+
+    top:15%;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            var(--cyan),
+            transparent
+        );
+
+    box-shadow:
+        0 0 12px var(--cyan);
+
+    opacity:.5;
+
+    animation:
+        surfaceScan
+        2.8s
+        ease-in-out
+        infinite;
+}
+
+@keyframes surfaceScan{
+
+    0%,
+    100%{
+        top:12%;
+        opacity:.12;
+    }
+
+    50%{
+        top:84%;
+        opacity:.6;
+    }
+}
+
+
+/* =========================================================
+   TELEMETRY
+========================================================= */
+
+.telemetry{
+    position:absolute;
+
+    width:185px;
+
+    right:2%;
+    bottom:6%;
+
+    padding:13px 14px;
+
+    border:1px solid rgba(103,232,239,.16);
+
+    border-radius:13px;
+
+    background:rgba(5,16,19,.72);
+
+    backdrop-filter:blur(12px);
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,.3);
+
+    animation:
+        telemetryFloat
+        4s
+        ease-in-out
+        infinite;
+}
+
+@keyframes telemetryFloat{
+
+    0%,
+    100%{
+        transform:translateY(0);
+    }
+
+    50%{
+        transform:translateY(-6px);
+    }
+}
+
+.telemetry-top,
+.telemetry-bottom{
+    display:flex;
+
+    justify-content:space-between;
+    align-items:center;
+
+    font-size:6px;
+
+    letter-spacing:2px;
+
+    color:#5e777b;
+}
+
+.telemetry-top b{
+    color:var(--cyan);
+
+    font-size:9px;
+}
+
+.telemetry-bars{
+    height:42px;
+
+    margin:10px 0;
+
+    display:flex;
+
+    align-items:flex-end;
+
+    gap:3px;
+}
+
+.telemetry-bars i{
+    flex:1;
+
+    min-width:2px;
+
+    height:25%;
+
+    border-radius:2px 2px 0 0;
+
+    background:var(--cyan);
+
+    opacity:.55;
+
+    animation:
+        barDance
+        .9s
+        ease-in-out
+        infinite alternate;
+}
+
+.telemetry-bars i:nth-child(2n){
+    animation-delay:-.25s;
+}
+
+.telemetry-bars i:nth-child(3n){
+    animation-delay:-.55s;
+}
+
+.telemetry-bars i:nth-child(4n){
+    animation-delay:-.12s;
+}
+
+@keyframes barDance{
+
+    from{
+        height:15%;
+        opacity:.25;
+    }
+
+    to{
+        height:90%;
+        opacity:.75;
+    }
+}
+
+.live-dot::before{
+    content:"";
+
+    display:inline-block;
+
+    width:5px;
+    height:5px;
+
+    margin-right:5px;
+
+    border-radius:50%;
+
+    background:var(--cyan);
+
+    box-shadow:
+        0 0 8px var(--cyan);
+
+    animation:
+        blink
+        1s
+        infinite;
+}
+
+@keyframes blink{
+    50%{
+        opacity:.25;
+    }
+}
+
+
+/* =========================================================
+   RIPPLE
+========================================================= */
+
+.ripple{
+    position:fixed;
+
+    width:12px;
+    height:12px;
+
+    border:1px solid var(--cyan);
+
+    border-radius:50%;
+
+    pointer-events:none;
+
+    z-index:1000;
+
+    animation:
+        rippleOut
+        .65s
+        ease-out
+        forwards;
+}
+
+@keyframes rippleOut{
+
+    from{
+        opacity:.7;
+
+        transform:scale(1);
+    }
+
+    to{
+        opacity:0;
+
+        transform:scale(9);
+    }
+}
+
+
+/* =========================================================
+   COMPLETION
+========================================================= */
+
+.completion{
+    margin-top:28px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    gap:7px;
+
+    color:#536a6f;
+
+    font-size:6px;
+
+    letter-spacing:2px;
+}
+
+.completion-ring{
+    position:relative;
+
+    width:74px;
+    height:74px;
+}
+
+.completion-ring svg{
+    width:100%;
+    height:100%;
+
+    transform:rotate(-90deg);
+}
+
+.completion-ring circle{
+    fill:none;
+
+    stroke-width:2.5;
+}
+
+.ring-bg{
+    stroke:rgba(255,255,255,.07);
+}
+
+.ring-progress{
+    stroke:var(--cyan);
+
+    stroke-linecap:round;
+
+    stroke-dasharray:264;
+
+    stroke-dashoffset:264;
+
+    filter:
+        drop-shadow(
+            0 0 5px
+            rgba(103,232,239,.5)
+        );
+
+    animation:
+        completeRing
+        1.5s
+        .2s
+        ease-out
+        forwards;
+}
+
+@keyframes completeRing{
+    to{
+        stroke-dashoffset:0;
+    }
+}
+
+.completion-ring strong{
+    position:absolute;
+
+    inset:0;
+
+    display:grid;
+
+    place-items:center;
+
+    color:var(--cyan);
+
+    font-family:"Space Grotesk",Arial,sans-serif;
+
+    font-size:11px;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media(max-width:1000px){
+
+    .hero{
+        grid-template-columns:1fr;
+
+        gap:20px;
+    }
+
+    .cpu-area{
+        height:350px;
+    }
+
+    .components{
+        grid-template-columns:
+            repeat(2,minmax(0,1fr));
+    }
+
+    .explanation{
+        grid-template-columns:1fr;
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:700px){
+
+    html,
+    body{
+        width:100%;
+        min-height:100%;
+
+        overflow-x:hidden;
+        overflow-y:auto;
+    }
+
+    header{
+        height:64px;
+
+        padding:0 16px;
+    }
+
+    .brand-chip{
+        width:32px;
+        height:32px;
+    }
+
+    .brand-title{
+        font-size:9px;
+    }
+
+    .brand-sub{
+        font-size:6px;
+    }
+
+    .header-title,
+    .status{
+        display:none;
+    }
+
+    .page{
+        position:absolute;
+
+        top:0;
+        left:0;
+
+        width:100%;
+
+        min-height:100dvh;
+        height:auto;
+
+        padding:
+            88px
+            20px
+            105px;
+
+        overflow-y:auto;
+        overflow-x:hidden;
+
+        -webkit-overflow-scrolling:touch;
+    }
+
+
+    /* HERO */
+
+    .hero{
+        display:block;
+
+        width:100%;
+
+        min-height:auto;
+
+        height:auto;
+    }
+
+    .eyebrow{
+        font-size:7px;
+
+        letter-spacing:2px;
+    }
+
+    h1{
+        margin-top:16px;
+
+        font-size:
+            clamp(43px,14vw,62px);
+
+        letter-spacing:-3px;
+    }
+
+    .hero-text{
+        margin-top:22px;
+
+        font-size:11px;
+
+        line-height:1.8;
+    }
+
+    .start{
+        margin-top:23px;
+    }
+
+    .meta{
+        gap:25px;
+
+        margin-top:24px;
+    }
+
+    .cpu-area{
+        height:310px;
+
+        margin-top:5px;
+    }
+
+    .cpu{
+        width:220px;
+        height:220px;
+
+        transform:
+            scale(.82)
+            rotateX(53deg)
+            rotateZ(-35deg);
+    }
+
+    .cpu-surface{
+        width:172px;
+        height:172px;
+
+        left:24px;
+        top:24px;
+    }
+
+    .cpu-core{
+        width:84px;
+        height:84px;
+
+        left:68px;
+        top:68px;
+    }
+
+
+    /* TITLES */
+
+    .section-title{
+        width:100%;
+    }
+
+    .section-title h2{
+        margin-top:14px;
+
+        font-size:
+            clamp(38px,12vw,55px);
+
+        letter-spacing:-3px;
+    }
+
+    .section-title p{
+        margin-top:15px;
+
+        font-size:10px;
+
+        line-height:1.8;
+    }
+
+
+    /* EXPLANATION */
+
+    .explanation{
+        display:grid;
+
+        grid-template-columns:1fr;
+
+        max-width:none;
+
+        margin-top:28px;
+
+        overflow:visible;
+    }
+
+    .explain-main{
+        min-height:auto;
+
+        padding:24px;
+
+        border-radius:19px;
+    }
+
+    .explain-main h3{
+        font-size:25px;
+
+        line-height:1.15;
+    }
+
+    .explain-main p{
+        font-size:10px;
+
+        line-height:1.8;
+    }
+
+    .highlight{
+        font-size:9px;
+    }
+
+    .side-info{
+        grid-template-columns:1fr;
+
+        margin-bottom:10px;
+    }
+
+
+    /* COMPONENTS */
+
+    .components{
+        display:grid;
+
+        grid-template-columns:1fr;
+
+        max-width:none;
+
+        margin-top:28px;
+
+        overflow:visible;
+    }
+
+    .component{
+        min-height:180px;
+
+        padding:23px;
+
+        border-radius:19px;
+    }
+
+
+    /* PROCESS */
+
+    .process-area{
+        margin-top:32px;
+
+        padding-bottom:20px;
+    }
+
+    .process-steps{
+        grid-template-columns:1fr;
+
+        gap:30px;
+    }
+
+    .process-line{
+        display:none;
+    }
+
+    .process-step p{
+        max-width:290px;
+
+        font-size:10px;
+    }
+
+    .fact-strip{
+        grid-template-columns:1fr;
+
+        margin-top:30px;
+    }
+
+    .fact{
+        border-right:0;
+
+        border-bottom:1px solid var(--line);
+    }
+
+    .fact:last-child{
+        border-bottom:0;
+    }
+
+
+    /* =====================================================
+       NEW SIMULATION MOBILE
+    ===================================================== */
+
+    .cpu-simulation{
+        padding:20px 16px;
+
+        border-radius:20px;
+    }
+
+    .cpu-simulation::before{
+        display:none;
+    }
+
+    .sim-header h3{
+        font-size:21px;
+    }
+
+    .sim-header p{
+        font-size:9px;
+    }
+
+    .command-box{
+        align-items:flex-start;
+
+        flex-wrap:wrap;
+    }
+
+    .command-text{
+        min-width:
+            calc(100% - 52px);
+    }
+
+    .sim-button{
+        width:100%;
+
+        margin-top:3px;
+    }
+
+
+    /*
+        Di mobile jalurnya menjadi vertikal,
+        tetapi tetap memiliki belokan kecil.
+    */
+
+    .sim-track{
+        height:810px;
+
+        margin-top:20px;
+    }
+
+    .sim-route-svg{
+        width:100%;
+        height:100%;
+    }
+
+    .sim-node{
+        width:155px;
+    }
+
+    .sim-node[data-step="0"]{
+        left:50%;
+        top:8%;
+    }
+
+    .sim-node[data-step="1"]{
+        left:50%;
+        top:28%;
+    }
+
+    .sim-node[data-step="2"]{
+        left:50%;
+        top:49%;
+    }
+
+    .sim-node[data-step="3"]{
+        left:50%;
+        top:70%;
+    }
+
+    .sim-node[data-step="4"]{
+        left:50%;
+        top:91%;
+    }
+
+    .sim-node-circle{
+        width:48px;
+        height:48px;
+    }
+
+    .sim-node-title{
+        margin-top:9px;
+    }
+
+    .sim-node-desc{
+        max-width:150px;
+
+        margin:5px auto 0;
+
+        font-size:7px;
+    }
+
+    .sim-explanation{
+        min-height:125px;
+
+        margin-top:4px;
+
+        padding:15px;
+    }
+
+    .sim-explanation h4{
+        font-size:14px;
+    }
+
+    .sim-explanation p{
+        font-size:9px;
+    }
+
+    .sim-status{
+        align-items:flex-start;
+
+        flex-direction:column;
+
+        gap:5px;
+    }
+
+
+    /* EXAMPLE */
+
+    .example{
+        grid-template-columns:1fr;
+
+        margin-top:28px;
+
+        padding-bottom:20px;
+    }
+
+    .example-box{
+        min-height:auto;
+
+        padding:25px;
+    }
+
+    .example-box h3{
+        font-size:26px;
+    }
+
+    .flow{
+        grid-column:auto;
+
+        flex-wrap:wrap;
+
+        gap:10px;
+
+        font-size:7px;
+    }
+
+
+    /* FINAL */
+
+    .final{
+        align-items:flex-start;
+
+        padding-top:130px;
+    }
+
+    .final-content h2{
+        font-size:
+            clamp(42px,13vw,58px);
+
+        letter-spacing:-3px;
+    }
+
+    .final-content p{
+        font-size:10px;
+
+        line-height:1.8;
+    }
+
+    .final-flow{
+        flex-wrap:wrap;
+
+        gap:10px;
+    }
+
+
+    /* NAVIGATION */
+
+    .navigation{
+        bottom:9px;
+
+        width:
+            calc(100% - 20px);
+
+        height:53px;
+
+        border-radius:16px;
+    }
+
+    .nav-btn{
+        width:39px;
+        height:39px;
+    }
+
+
+    /* MODAL */
+
+    .modal{
+        padding:15px;
+    }
+
+    .modal-box{
+        padding:29px 24px;
+
+        border-radius:20px;
+    }
+
+    .modal-box h2{
+        font-size:29px;
+    }
+
+    .modal-box p{
+        font-size:10px;
+
+        line-height:1.8;
+    }
+
+    .telemetry{
+        position:relative;
+
+        width:min(250px,100%);
+
+        right:auto;
+        bottom:auto;
+
+        margin:0 auto 5px;
+    }
+
+    .cursor-glow{
+        display:none;
+    }
+
+    .ambient-grid{
+        background-size:48px 48px;
+    }
+
+}
+
+
+/* =========================================================
+   VERY SMALL PHONE
+========================================================= */
+
+@media(max-width:380px){
+
+    h1{
+        font-size:42px;
+    }
+
+    .cpu-area{
+        height:275px;
+    }
+
+    .cpu{
+        transform:
+            scale(.68)
+            rotateX(53deg)
+            rotateZ(-35deg);
+    }
+
+    .section-title h2{
+        font-size:38px;
+    }
+
+    .navigation{
+        width:
+            calc(100% - 12px);
+    }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media(prefers-reduced-motion:reduce){
+
+    *,
+    *::before,
+    *::after{
+        animation-duration:.01ms !important;
+
+        animation-iteration-count:1 !important;
+
+        scroll-behavior:auto !important;
+
+        transition-duration:.01ms !important;
+    }
+
+}
+
+
+/* =========================================================
+   SIMULASI CPU UNTUK ANAK SMP
+========================================================= */
+.simple-cpu-lab{
+    margin-top:18px;
+    padding:18px;
+    border:1px solid rgba(103,232,239,.12);
+    border-radius:18px;
+    background:linear-gradient(145deg,rgba(6,20,24,.96),rgba(8,14,17,.98));
+}
+.simple-lab-top{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.simple-command-input{
+    flex:1;min-width:220px;height:40px;padding:0 13px;
+    border:1px solid rgba(103,232,239,.16);border-radius:9px;
+    outline:none;background:#071316;color:#dffbfc;
+    font:700 9px "Space Grotesk",Arial,sans-serif;
+}
+.simple-command-input:focus{border-color:rgba(103,232,239,.55);box-shadow:0 0 0 3px rgba(103,232,239,.05)}
+.simple-command-chip{
+    height:31px;padding:0 10px;border:1px solid rgba(255,255,255,.07);
+    border-radius:8px;background:#0b1b1f;color:#729095;font-size:6px;
+    font-weight:800;letter-spacing:1px;cursor:pointer;transition:.25s
+}
+.simple-command-chip:hover,.simple-command-chip.selected{border-color:rgba(103,232,239,.4);color:var(--cyan);background:rgba(103,232,239,.07)}
+.simple-command-info{margin-top:10px;color:#637d82;font-size:7px;line-height:1.7}
+.simple-command-info strong{color:#9edfe3}
+.simple-cpu-board{
+    position:relative;margin-top:15px;padding:24px 15px 20px;
+    border:1px solid rgba(103,232,239,.09);border-radius:16px;
+    background:radial-gradient(circle at 50% 45%,rgba(103,232,239,.055),transparent 42%),#050f12;
+    overflow:hidden;
+}
+.simple-cpu-board::before{content:"DI DALAM CPU";position:absolute;right:15px;top:12px;color:rgba(103,232,239,.25);font-size:6px;font-weight:800;letter-spacing:2px}
+.simple-flow{position:relative;display:grid;grid-template-columns:repeat(6,1fr);gap:12px;align-items:center;min-height:150px}
+.simple-flow-line{position:absolute;left:7%;right:7%;top:61px;height:2px;background:rgba(103,232,239,.10);z-index:0}
+.simple-flow-progress{position:absolute;left:7%;top:61px;width:0;height:2px;background:var(--cyan);box-shadow:0 0 12px rgba(103,232,239,.7);z-index:1;transition:width 1.2s ease}
+.simple-module{position:relative;z-index:2;text-align:center}
+.simple-module-box{
+    width:78px;height:78px;margin:auto;display:flex;align-items:center;justify-content:center;flex-direction:column;
+    border:1px solid rgba(103,232,239,.13);border-radius:14px;
+    background:linear-gradient(145deg,#0c2227,#071417);transition:.45s;
+}
+.simple-module small{font-size:5px;color:#526c71;letter-spacing:1.2px;font-weight:800}
+.simple-module strong{margin-top:6px;font:700 10px "Space Grotesk",Arial,sans-serif;color:#a7cdd0}
+.simple-module p{margin-top:8px;color:#597176;font-size:6px;line-height:1.5}
+.simple-module.active .simple-module-box{border-color:rgba(103,232,239,.75);background:rgba(103,232,239,.08);box-shadow:0 0 26px rgba(103,232,239,.13);transform:translateY(-4px)}
+.simple-module.active strong{color:var(--cyan)}
+.simple-module.done .simple-module-box{border-color:rgba(103,232,239,.30)}
+.simple-data-packet{position:absolute;z-index:5;top:56px;left:7%;width:11px;height:11px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan),0 0 25px rgba(103,232,239,.6);opacity:0;transform:translateX(-50%);transition:left 1.2s cubic-bezier(.2,.8,.2,1),opacity .3s}
+.simple-data-packet.show{opacity:1}
+.simple-stage-card{margin-top:14px;padding:16px;border-left:2px solid var(--cyan);border-radius:0 12px 12px 0;background:rgba(103,232,239,.035);min-height:86px}
+.simple-stage-label{color:var(--cyan);font-size:6px;font-weight:800;letter-spacing:2px}
+.simple-stage-card h4{margin-top:7px;font:700 17px "Space Grotesk",Arial,sans-serif;color:#dff5f6}
+.simple-stage-card p{margin-top:6px;color:#82999d;font-size:8px;line-height:1.75;max-width:800px}
+.simple-stage-tip{margin-top:8px;color:#607a7f;font-size:7px}
+.simple-stage-tip b{color:#a4dfe2}
+.simple-stage-list{display:flex;gap:6px;flex-wrap:wrap;margin-top:11px}
+.simple-stage-list span{padding:5px 7px;border:1px solid rgba(255,255,255,.06);border-radius:6px;background:#081518;color:#506a6f;font-size:5.5px;letter-spacing:.8px}
+.simple-stage-list span.active{color:var(--cyan);border-color:rgba(103,232,239,.35);background:rgba(103,232,239,.05)}
+@media(max-width:800px){
+    .simple-flow{grid-template-columns:repeat(3,1fr);row-gap:22px;min-height:310px}
+    .simple-flow-line,.simple-flow-progress,.simple-data-packet{display:none}
+    .simple-module-box{width:70px;height:70px}
+}
+@media(max-width:500px){.simple-flow{grid-template-columns:repeat(2,1fr)}.simple-command-input{min-width:100%}}
+
+
+/* =========================================================
+   SCROLL FIX — PAGE SCROLL TANPA PINDAH SLIDE
+========================================================= */
+html,body{width:100%;height:100%;overflow:hidden;}
+main{height:100dvh;min-height:100dvh;overflow:hidden;}
+.page{height:100dvh;min-height:100dvh;overflow-y:auto;overscroll-behavior:contain;pointer-events:none;-webkit-overflow-scrolling:touch;}
+.page.active{pointer-events:auto;}
+
+
+
+/* =========================================================
+   QUIZ — RAMAH UNTUK ANAK SMP
+========================================================= */
+.quiz-wrap{
+    max-width:900px;
+    margin:38px auto 0;
+}
+.quiz-card{
+    padding:28px;
+    border:1px solid rgba(110,231,216,.18);
+    border-radius:24px;
+    background:linear-gradient(145deg,rgba(18,48,55,.88),rgba(8,22,27,.96));
+    box-shadow:0 18px 50px rgba(0,0,0,.18);
+}
+.quiz-progress{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    color:#789397;
+    font-size:8px;
+    letter-spacing:2px;
+}
+.quiz-progress-bar{
+    height:6px;
+    margin-top:10px;
+    border-radius:99px;
+    background:rgba(255,255,255,.06);
+    overflow:hidden;
+}
+.quiz-progress-fill{
+    width:0;
+    height:100%;
+    border-radius:inherit;
+    background:linear-gradient(90deg,#6ee7d8,#75d8ff);
+    transition:width .45s ease;
+}
+.quiz-question{
+    margin-top:27px;
+    font-family:"Space Grotesk",Arial,sans-serif;
+    font-size:clamp(22px,3vw,32px);
+    line-height:1.15;
+}
+.quiz-answers{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    margin-top:22px;
+}
+.quiz-answer{
+    padding:16px 17px;
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:14px;
+    background:rgba(255,255,255,.025);
+    color:#bdd0d3;
+    text-align:left;
+    font:600 10px/1.5 "DM Sans",Arial,sans-serif;
+    cursor:pointer;
+    transition:.25s ease;
+}
+.quiz-answer:hover:not(:disabled){
+    transform:translateY(-2px);
+    border-color:rgba(110,231,216,.38);
+    background:rgba(110,231,216,.06);
+}
+.quiz-answer.correct{
+    border-color:rgba(110,231,216,.7);
+    background:rgba(110,231,216,.12);
+    color:#dffff9;
+}
+.quiz-answer.wrong{
+    border-color:rgba(255,150,130,.55);
+    background:rgba(255,150,130,.08);
+}
+.quiz-answer:disabled{cursor:default}
+.quiz-feedback{
+    min-height:66px;
+    margin-top:17px;
+    padding:15px 17px;
+    border-radius:14px;
+    background:rgba(255,255,255,.035);
+    color:#94aaad;
+    font-size:10px;
+    line-height:1.7;
+}
+.quiz-feedback strong{color:#dceff0}
+.quiz-next,.quiz-retry{
+    margin-top:15px;
+    min-height:44px;
+    padding:0 18px;
+    border:0;
+    border-radius:11px;
+    background:#e9f9fa;
+    color:#071012;
+    font-size:9px;
+    font-weight:800;
+    letter-spacing:1px;
+    cursor:pointer;
+}
+.quiz-next:disabled{opacity:.35;cursor:default}
+.quiz-score{
+    display:none;
+    text-align:center;
+    padding:20px 10px 10px;
+}
+.quiz-score.show{display:block}
+.quiz-score-badge{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:78px;
+    height:78px;
+    border-radius:50%;
+    border:1px solid rgba(110,231,216,.35);
+    background:rgba(110,231,216,.08);
+    color:#6ee7d8;
+    font:700 20px "Space Grotesk",Arial,sans-serif;
+    box-shadow:0 0 35px rgba(110,231,216,.12);
+}
+.quiz-score h3{margin-top:17px;font:700 25px "Space Grotesk",Arial,sans-serif}
+.quiz-score p{max-width:570px;margin:10px auto 0;color:#8ea5a9;font-size:10px;line-height:1.8}
+.quiz-surprise{
+    position:relative;
+    display:none;
+    margin:20px auto 0;
+    max-width:560px;
+    padding:18px;
+    border:1px solid rgba(117,216,255,.28);
+    border-radius:17px;
+    background:linear-gradient(135deg,rgba(110,231,216,.08),rgba(117,216,255,.07));
+    overflow:hidden;
+}
+.quiz-surprise.show{display:block;animation:quizPop .55s cubic-bezier(.2,.8,.2,1)}
+.quiz-surprise::before,.quiz-surprise::after{
+    content:"✦";
+    position:absolute;
+    color:#75d8ff;
+    animation:quizSpark 2.2s ease-in-out infinite;
+}
+.quiz-surprise::before{left:14%;top:15px}
+.quiz-surprise::after{right:15%;bottom:12px;animation-delay:.7s}
+.quiz-surprise strong{color:#dffff9;font:700 16px "Space Grotesk",Arial,sans-serif}
+.quiz-surprise p{margin-top:6px;color:#8faeb2;font-size:9px;line-height:1.7}
+@keyframes quizPop{from{opacity:0;transform:scale(.92) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes quizSpark{0%,100%{opacity:.2;transform:translateY(0) scale(.8)}50%{opacity:1;transform:translateY(-8px) scale(1.2)}}
+@media(max-width:700px){
+    .quiz-card{padding:20px}
+    .quiz-answers{grid-template-columns:1fr}
+    .quiz-question{font-size:22px}
+}
+
+</style>
+</head>
+
+
+<body>
+
+<div class="ambient-grid" aria-hidden="true"></div>
+<div class="cursor-glow" aria-hidden="true"></div>
+<div class="particles" aria-hidden="true"></div>
+<div class="scanline" aria-hidden="true"></div>
+
+
+<!-- =======================================================
+     HEADER
+======================================================= -->
+
+<header>
+
+    <div class="brand">
+
+        <div class="brand-chip">
+            CPU
+        </div>
+
+        <div>
+
+            <div class="brand-title">
+                PROCESSOR LAB
+            </div>
+
+            <div class="brand-sub">
+                PERSONAL PROJECT
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="header-title">
+        MENGENAL CARA KERJA PROSESOR
+    </div>
+
+
+    <div class="status">
+        INTERACTIVE
+    </div>
+
+</header>
+
+
+
+<main>
+
+
+<!-- =======================================================
+     PAGE 1
+======================================================= -->
+
+<section class="page hero active">
+
+    <div>
+
+        <div class="eyebrow">
+            COMPUTER ARCHITECTURE
+        </div>
+
+
+        <h1>
+
+            Mengenal
+
+            <br>
+
+            <span class="cyan">
+                Cara Kerja
+            </span>
+
+            <br>
+
+            Prosesor.
+
+        </h1>
+
+
+        <p class="hero-text">
+
+            Prosesor atau CPU merupakan salah satu komponen
+            utama komputer yang bertugas menjalankan instruksi
+            dan mengolah data. Hampir setiap aktivitas pada
+            komputer membutuhkan kerja prosesor, mulai dari
+            membuka aplikasi, menjalankan game, mengetik,
+            sampai memproses berbagai perintah dari pengguna.
+
+        </p>
+
+
+        <button
+            class="start"
+            id="start"
+        >
+
+            MULAI BELAJAR
+
+            <span>
+                →
+            </span>
+
+        </button>
+
+
+        <div class="meta">
+
+            <div class="meta-item">
+
+                <small>
+                    TOPIC
+                </small>
+
+                <strong>
+                    PROCESSOR / CPU
+                </strong>
+
+            </div>
+
+
+            <div class="meta-item">
+
+                <small>
+                    PROJECT
+                </small>
+
+                <strong>
+                    2026
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="telemetry" aria-label="Simulasi aktivitas CPU">
+
+        <div class="telemetry-top">
+
+            <span>
+                CPU ACTIVITY
+            </span>
+
+            <b id="cpuLoad">
+                47%
+            </b>
+
+        </div>
+
+
+        <div
+            class="telemetry-bars"
+            id="telemetryBars"
+        >
+
+            <i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><i></i><i></i><i></i>
+
+        </div>
+
+
+        <div class="telemetry-bottom">
+
+            <span>
+                PROCESSING
+            </span>
+
+            <span class="live-dot">
+                LIVE
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="cpu-area">
+
+        <div class="cpu-shadow"></div>
+
+
+        <div class="cpu">
+
+            <div class="cpu-body"></div>
+
+            <div class="cpu-surface"></div>
+
+
+            <div class="cpu-core">
+
+                <i class="core-lines h h1"></i>
+                <i class="core-lines h h2"></i>
+                <i class="core-lines h h3"></i>
+
+                <i class="core-lines v v1"></i>
+                <i class="core-lines v v2"></i>
+                <i class="core-lines v v3"></i>
+
+            </div>
+
+
+            <i class="pin t" style="left:25px"></i>
+            <i class="pin t" style="left:50px"></i>
+            <i class="pin t" style="left:75px"></i>
+            <i class="pin t" style="left:100px"></i>
+            <i class="pin t" style="left:125px"></i>
+            <i class="pin t" style="left:150px"></i>
+            <i class="pin t" style="left:175px"></i>
+            <i class="pin t" style="left:200px"></i>
+            <i class="pin t" style="left:225px"></i>
+
+            <i class="pin b" style="left:25px"></i>
+            <i class="pin b" style="left:50px"></i>
+            <i class="pin b" style="left:75px"></i>
+            <i class="pin b" style="left:100px"></i>
+            <i class="pin b" style="left:125px"></i>
+            <i class="pin b" style="left:150px"></i>
+            <i class="pin b" style="left:175px"></i>
+            <i class="pin b" style="left:200px"></i>
+            <i class="pin b" style="left:225px"></i>
+
+            <i class="pin l" style="top:25px"></i>
+            <i class="pin l" style="top:50px"></i>
+            <i class="pin l" style="top:75px"></i>
+            <i class="pin l" style="top:100px"></i>
+            <i class="pin l" style="top:125px"></i>
+            <i class="pin l" style="top:150px"></i>
+            <i class="pin l" style="top:175px"></i>
+            <i class="pin l" style="top:200px"></i>
+            <i class="pin l" style="top:225px"></i>
+
+            <i class="pin r" style="top:25px"></i>
+            <i class="pin r" style="top:50px"></i>
+            <i class="pin r" style="top:75px"></i>
+            <i class="pin r" style="top:100px"></i>
+            <i class="pin r" style="top:125px"></i>
+            <i class="pin r" style="top:150px"></i>
+            <i class="pin r" style="top:175px"></i>
+            <i class="pin r" style="top:200px"></i>
+            <i class="pin r" style="top:225px"></i>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =======================================================
+     PAGE 2
+======================================================= -->
+
+<section class="page">
+
+    <div class="section-title">
+
+        <div class="eyebrow">
+            01 / DASAR
+        </div>
+
+
+        <h2>
+
+            Apa sebenarnya
+
+            <span class="cyan">
+                prosesor?
+            </span>
+
+        </h2>
+
+
+        <p>
+
+            Sebelum memahami cara kerjanya, kita perlu tahu
+            terlebih dahulu apa yang dimaksud dengan prosesor
+            dan mengapa komponen ini sangat penting bagi
+            sebuah komputer.
+
+        </p>
+
+    </div>
+
+
+
+    <div class="explanation">
+
+        <article class="explain-main">
+
+            <div class="explain-number">
+                01 — CENTRAL PROCESSING UNIT
+            </div>
+
+
+            <h3>
+                Pusat pemrosesan komputer.
+            </h3>
+
+
+            <p>
+
+                Prosesor atau CPU adalah komponen yang
+                menjalankan instruksi dari program dan mengolah
+                data yang diberikan oleh komputer. Ketika kita
+                melakukan sesuatu di komputer, seperti membuka
+                aplikasi, mengetik teks, memutar video, atau
+                menjalankan game, CPU akan bekerja untuk
+                menjalankan perintah yang diperlukan.
+
+            </p>
+
+
+            <p>
+
+                CPU menerima instruksi, memprosesnya melalui
+                bagian-bagian di dalam prosesor, kemudian
+                menghasilkan hasil yang dibutuhkan oleh sistem.
+                Semua proses tersebut berlangsung sangat cepat
+                sehingga pengguna dapat menggunakan komputer
+                tanpa harus menunggu setiap instruksi selesai
+                satu per satu.
+
+            </p>
+
+
+            <div class="highlight">
+
+                <strong>
+                    INTINYA:
+                </strong>
+
+                prosesor bertugas menjalankan instruksi dan
+                mengolah data agar komputer dapat melakukan
+                berbagai pekerjaan.
+
+            </div>
+
+        </article>
+
+
+
+        <div class="side-info">
+
+            <div class="info-box">
+
+                <div class="info-icon">
+                    CPU
+                </div>
+
+
+                <small>
+                    KEPANJANGAN
+                </small>
+
+
+                <strong>
+                    Central Processing Unit
+                </strong>
+
+
+                <p>
+
+                    Unit utama yang bertugas melakukan
+                    pemrosesan instruksi.
+
+                </p>
+
+            </div>
+
+
+
+            <div class="info-box">
+
+                <div class="info-icon">
+                    ⚡
+                </div>
+
+
+                <small>
+                    FUNGSI UTAMA
+                </small>
+
+
+                <strong>
+                    Memproses Instruksi
+                </strong>
+
+
+                <p>
+
+                    CPU menerima perintah lalu mengolahnya
+                    menjadi hasil yang dapat digunakan komputer.
+
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =======================================================
+     PAGE 3
+======================================================= -->
+
+<section class="page">
+
+    <div class="section-title">
+
+        <div class="eyebrow">
+            02 / COMPONENTS
+        </div>
+
+
+        <h2>
+
+            Bagian penting
+
+            <span class="cyan">
+                CPU.
+            </span>
+
+        </h2>
+
+
+        <p>
+
+            CPU tidak bekerja sebagai satu bagian saja.
+            Di dalamnya terdapat beberapa bagian yang
+            memiliki fungsi berbeda dan saling bekerja sama.
+
+        </p>
+
+    </div>
+
+
+
+    <div class="components">
+
+        <button
+            class="component"
+            data-type="alu"
+        >
+
+            <span class="component-number">
+                COMPONENT 01
+            </span>
+
+
+            <div class="component-icon">
+                +
+            </div>
+
+
+            <h3>
+                ALU
+            </h3>
+
+
+            <p>
+
+                Melakukan operasi aritmatika dan logika
+                yang dibutuhkan CPU.
+
+            </p>
+
+
+            <span class="component-arrow">
+                →
+            </span>
+
+        </button>
+
+
+
+        <button
+            class="component"
+            data-type="control"
+        >
+
+            <span class="component-number">
+                COMPONENT 02
+            </span>
+
+
+            <div class="component-icon">
+                ◈
+            </div>
+
+
+            <h3>
+                CONTROL UNIT
+            </h3>
+
+
+            <p>
+
+                Mengatur jalannya instruksi dan memberikan
+                arahan kepada bagian CPU.
+
+            </p>
+
+
+            <span class="component-arrow">
+                →
+            </span>
+
+        </button>
+
+
+
+        <button
+            class="component"
+            data-type="register"
+        >
+
+            <span class="component-number">
+                COMPONENT 03
+            </span>
+
+
+            <div class="component-icon">
+                □
+            </div>
+
+
+            <h3>
+                REGISTER
+            </h3>
+
+
+            <p>
+
+                Menyimpan data sementara yang sedang
+                digunakan oleh CPU.
+
+            </p>
+
+
+            <span class="component-arrow">
+                →
+            </span>
+
+        </button>
+
+
+
+        <button
+            class="component"
+            data-type="cache"
+        >
+
+            <span class="component-number">
+                COMPONENT 04
+            </span>
+
+
+            <div class="component-icon">
+                ≋
+            </div>
+
+
+            <h3>
+                CACHE
+            </h3>
+
+
+            <p>
+
+                Menyimpan data atau instruksi yang sering
+                digunakan agar dapat diakses lebih cepat.
+
+            </p>
+
+
+            <span class="component-arrow">
+                →
+            </span>
+
+        </button>
+
+    </div>
+
+</section>
+
+
+
+<!-- =======================================================
+     PAGE 4
+======================================================= -->
+
+<section class="page">
+
+    <div class="section-title">
+
+        <div class="eyebrow">
+            03 / PROCESS
+        </div>
+
+
+        <h2>
+
+            Cara CPU
+
+            <span class="cyan">
+                bekerja.
+            </span>
+
+        </h2>
+
+
+        <p>
+
+            Sekarang kita lihat apa yang terjadi setelah
+            pengguna memberikan sebuah perintah kepada
+            komputer. Ikuti perjalanan perintah tersebut
+            dari awal sampai menghasilkan sesuatu.
+
+        </p>
+
+    </div>
+
+
+
+    <div class="process-area">
+
+
+        <!-- =================================================
+             INTERACTIVE SIMULATION
+        ================================================== -->
+
+        <div class="cpu-simulation">
+
+            <div class="sim-header">
+
+                <div class="sim-label">
+                    INTERACTIVE SIMULATION
+                </div>
+
+
+                <h3>
+                    Dari perintah menjadi hasil.
+                </h3>
+
+
+                <p>
+
+                    Bayangkan kamu menekan tombol untuk membuka
+                    sebuah aplikasi. Tekanan tersebut menjadi
+                    perintah yang kemudian diproses CPU melalui
+                    beberapa tahap.
+
+                </p>
+
+            </div>
+
+
+            <!-- COMMAND -->
+
+            <div class="command-box">
+
+                <div class="command-icon">
+                    ▶
+                </div>
+
+
+                <div class="command-text">
+
+                    <small>
+                        CONTOH PERINTAH
+                    </small>
+
+                    <strong id="commandDisplay">
+                        "Buka aplikasi"
+                    </strong>
+
+                </div>
+
+
+                <button
+                    class="sim-button"
+                    id="runSimulation"
+                >
+                    KIRIM PERINTAH
+                </button>
+
+            </div>
+
+            <!-- =================================================
+                 SIMULASI DALAM CPU — VERSI MUDAH
+            ================================================== -->
+
+            <div class="simple-cpu-lab">
+                <div class="simple-lab-top">
+                    <input id="simpleCommandInput" class="simple-command-input" value="Buka aplikasi" aria-label="Perintah yang dikirim ke CPU">
+                    <button class="simple-command-chip selected" data-simple-command="Buka aplikasi">BUKA APP</button>
+                    <button class="simple-command-chip" data-simple-command="Hitung 24 + 18">HITUNG</button>
+                    <button class="simple-command-chip" data-simple-command="Muat data">MUAT DATA</button>
+                </div>
+                <div class="simple-command-info">
+                    Perintahmu: <strong id="simpleCommandText">Buka aplikasi</strong> · Ikuti titik cahaya. <strong>Jangan buru-buru:</strong> penjelasan berubah setelah titik sampai.
+                </div>
+
+                <div class="simple-cpu-board">
+                    <div class="simple-flow" id="simpleCpuFlow">
+                        <div class="simple-flow-line"></div>
+                        <div class="simple-flow-progress" id="simpleFlowProgress"></div>
+                        <div class="simple-data-packet" id="simpleDataPacket"></div>
+
+                        <div class="simple-module" data-simple-step="0">
+                            <div class="simple-module-box"><small>AWAL</small><strong>INPUT</strong></div>
+                            <p>Perintah dari kamu</p>
+                        </div>
+                        <div class="simple-module" data-simple-step="1">
+                            <div class="simple-module-box"><small>TAHAP 1</small><strong>FETCH</strong></div>
+                            <p>Ambil instruksi</p>
+                        </div>
+                        <div class="simple-module" data-simple-step="2">
+                            <div class="simple-module-box"><small>TAHAP 2</small><strong>BUFFER</strong></div>
+                            <p>Simpan sebentar</p>
+                        </div>
+                        <div class="simple-module" data-simple-step="3">
+                            <div class="simple-module-box"><small>TAHAP 3</small><strong>DECODE</strong></div>
+                            <p>Pahami instruksi</p>
+                        </div>
+                        <div class="simple-module" data-simple-step="4">
+                            <div class="simple-module-box"><small>TAHAP 4</small><strong>EXECUTE</strong></div>
+                            <p>Jalankan perintah</p>
+                        </div>
+                        <div class="simple-module" data-simple-step="5">
+                            <div class="simple-module-box"><small>SELESAI</small><strong>RESULT</strong></div>
+                            <p>Hasil diberikan</p>
+                        </div>
+                    </div>
+
+                    <div class="simple-stage-card" id="simpleStageCard">
+                        <div class="simple-stage-label" id="simpleStageLabel">LANGKAH 0 · INPUT</div>
+                        <h4 id="simpleStageTitle">Kamu memberikan perintah.</h4>
+                        <p id="simpleStageText">Kamu menekan tombol atau memilih sebuah aplikasi. Perintah itu menjadi sesuatu yang perlu diproses oleh komputer.</p>
+                        <div class="simple-stage-tip" id="simpleStageTip"><b>Gampangnya:</b> kamu = orang yang memberi tugas.</div>
+                    </div>
+
+                    <div class="simple-stage-list">
+                        <span data-simple-log="0" class="active">INPUT</span>
+                        <span data-simple-log="1">FETCH</span>
+                        <span data-simple-log="2">BUFFER</span>
+                        <span data-simple-log="3">DECODE</span>
+                        <span data-simple-log="4">EXECUTE</span>
+                        <span data-simple-log="5">RESULT</span>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- =================================================
+                 CURVED TRACK
+            ================================================== -->
+
+            <div
+                class="sim-track"
+                id="simTrack"
+            >
+
+                <!-- DESKTOP CURVED ROUTE -->
+
+                <svg
+                    class="sim-route-svg desktop-route"
+                    viewBox="0 0 1000 280"
+                    preserveAspectRatio="none"
+                    aria-hidden="true"
+                >
+
+                    <defs>
+
+                        <filter
+                            id="routeGlow"
+                            x="-50%"
+                            y="-50%"
+                            width="200%"
+                            height="200%"
+                        >
+
+                            <feGaussianBlur
+                                stdDeviation="4"
+                                result="blur"
+                            />
+
+                        </filter>
+
+
+                        <filter
+                            id="packetGlow"
+                            x="-100%"
+                            y="-100%"
+                            width="300%"
+                            height="300%"
+                        >
+
+                            <feGaussianBlur
+                                stdDeviation="4"
+                                result="blur"
+                            />
+
+                            <feMerge>
+
+                                <feMergeNode
+                                    in="blur"
+                                ></feMergeNode>
+
+                                <feMergeNode
+                                    in="SourceGraphic"
+                                ></feMergeNode>
+
+                            </feMerge>
+
+                        </filter>
+
+                    </defs>
+
+
+                    <!-- Soft glow behind route -->
+
+                    <path
+                        id="desktopGlowPath"
+                        class="sim-route-glow"
+                        d="
+                            M 100 88
+                            C 170 88, 225 184, 300 184
+                            C 375 184, 430 76, 500 76
+                            C 570 76, 625 178, 700 178
+                            C 775 178, 830 88, 900 88
+                        "
+                    ></path>
+
+
+                    <!-- Main route -->
+
+                    <path
+                        id="desktopRoutePath"
+                        class="sim-route-path"
+                        d="
+                            M 100 88
+                            C 170 88, 225 184, 300 184
+                            C 375 184, 430 76, 500 76
+                            C 570 76, 625 178, 700 178
+                            C 775 178, 830 88, 900 88
+                        "
+                    ></path>
+
+
+                    <!-- Progress -->
+
+                    <path
+                        id="desktopProgressPath"
+                        class="sim-route-progress"
+                        d="
+                            M 100 88
+                            C 170 88, 225 184, 300 184
+                            C 375 184, 430 76, 500 76
+                            C 570 76, 625 178, 700 178
+                            C 775 178, 830 88, 900 88
+                        "
+                    ></path>
+
+
+                    <!-- MOVING DATA -->
+
+                    <g
+                        id="commandPacketDesktop"
+                        class="command-packet"
+                    >
+
+                        <circle
+                            class="packet-outer"
+                            cx="0"
+                            cy="0"
+                            r="15"
+                        ></circle>
+
+                        <circle
+                            class="packet-middle"
+                            cx="0"
+                            cy="0"
+                            r="10"
+                        ></circle>
+
+                        <circle
+                            class="packet-core"
+                            cx="0"
+                            cy="0"
+                            r="4"
+                        ></circle>
+
+                        <rect
+                            class="packet-diamond"
+                            x="-2.5"
+                            y="-2.5"
+                            width="5"
+                            height="5"
+                            rx="1"
+                            transform="rotate(45)"
+                        ></rect>
+
+                    </g>
+
+                </svg>
+
+
+                <!-- MOBILE CURVED ROUTE -->
+
+                <svg
+                    class="sim-route-svg mobile-route"
+                    viewBox="0 0 220 820"
+                    preserveAspectRatio="none"
+                    aria-hidden="true"
+                >
+
+                    <defs>
+
+                        <filter
+                            id="mobileRouteGlow"
+                            x="-100%"
+                            y="-50%"
+                            width="300%"
+                            height="200%"
+                        >
+
+                            <feGaussianBlur
+                                stdDeviation="4"
+                            />
+
+                        </filter>
+
+
+                        <filter
+                            id="mobilePacketGlow"
+                            x="-100%"
+                            y="-100%"
+                            width="300%"
+                            height="300%"
+                        >
+
+                            <feGaussianBlur
+                                stdDeviation="4"
+                                result="blur"
+                            />
+
+                            <feMerge>
+
+                                <feMergeNode
+                                    in="blur"
+                                ></feMergeNode>
+
+                                <feMergeNode
+                                    in="SourceGraphic"
+                                ></feMergeNode>
+
+                            </feMerge>
+
+                        </filter>
+
+                    </defs>
+
+
+                    <path
+                        id="mobileGlowPath"
+                        class="sim-route-glow"
+                        d="
+                            M 110 55
+                            C 155 105, 65 145, 110 215
+                            C 155 285, 65 325, 110 390
+                            C 155 455, 65 505, 110 565
+                            C 155 630, 65 685, 110 755
+                        "
+                    ></path>
+
+
+                    <path
+                        id="mobileRoutePath"
+                        class="sim-route-path"
+                        d="
+                            M 110 55
+                            C 155 105, 65 145, 110 215
+                            C 155 285, 65 325, 110 390
+                            C 155 455, 65 505, 110 565
+                            C 155 630, 65 685, 110 755
+                        "
+                    ></path>
+
+
+                    <path
+                        id="mobileProgressPath"
+                        class="sim-route-progress"
+                        d="
+                            M 110 55
+                            C 155 105, 65 145, 110 215
+                            C 155 285, 65 325, 110 390
+                            C 155 455, 65 505, 110 565
+                            C 155 630, 65 685, 110 755
+                        "
+                    ></path>
+
+
+                    <g
+                        id="commandPacketMobile"
+                        class="command-packet"
+                    >
+
+                        <circle
+                            class="packet-outer"
+                            cx="0"
+                            cy="0"
+                            r="15"
+                        ></circle>
+
+                        <circle
+                            class="packet-middle"
+                            cx="0"
+                            cy="0"
+                            r="10"
+                        ></circle>
+
+                        <circle
+                            class="packet-core"
+                            cx="0"
+                            cy="0"
+                            r="4"
+                        ></circle>
+
+                        <rect
+                            class="packet-diamond"
+                            x="-2.5"
+                            y="-2.5"
+                            width="5"
+                            height="5"
+                            rx="1"
+                            transform="rotate(45)"
+                        ></rect>
+
+                    </g>
+
+                </svg>
+
+
+                <!-- USER -->
+
+                <div
+                    class="sim-node"
+                    data-step="0"
+                >
+
+                    <div class="sim-node-circle">
+                        01
+                    </div>
+
+                    <div class="sim-node-title">
+                        USER
+                    </div>
+
+                    <div class="sim-node-desc">
+                        Pengguna memberikan perintah.
+                    </div>
+
+                </div>
+
+
+                <!-- FETCH -->
+
+                <div
+                    class="sim-node"
+                    data-step="1"
+                >
+
+                    <div class="sim-node-circle">
+                        02
+                    </div>
+
+                    <div class="sim-node-title">
+                        FETCH
+                    </div>
+
+                    <div class="sim-node-desc">
+                        CPU mengambil instruksi.
+                    </div>
+
+                </div>
+
+
+                <!-- DECODE -->
+
+                <div
+                    class="sim-node"
+                    data-step="2"
+                >
+
+                    <div class="sim-node-circle">
+                        03
+                    </div>
+
+                    <div class="sim-node-title">
+                        DECODE
+                    </div>
+
+                    <div class="sim-node-desc">
+                        Instruksi diterjemahkan.
+                    </div>
+
+                </div>
+
+
+                <!-- EXECUTE -->
+
+                <div
+                    class="sim-node"
+                    data-step="3"
+                >
+
+                    <div class="sim-node-circle">
+                        04
+                    </div>
+
+                    <div class="sim-node-title">
+                        EXECUTE
+                    </div>
+
+                    <div class="sim-node-desc">
+                        Instruksi dijalankan.
+                    </div>
+
+                </div>
+
+
+                <!-- RESULT -->
+
+                <div
+                    class="sim-node"
+                    data-step="4"
+                >
+
+                    <div class="sim-node-circle">
+                        05
+                    </div>
+
+                    <div class="sim-node-title">
+                        RESULT
+                    </div>
+
+                    <div class="sim-node-desc">
+                        Hasil diberikan kepada sistem.
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- EXPLANATION -->
+
+            <div
+                class="sim-explanation"
+                id="simExplanation"
+            >
+
+                <div class="sim-explanation-label">
+                    CURRENT STEP
+                </div>
+
+
+                <h4 id="simTitle">
+                    Siap menerima perintah.
+                </h4>
+
+
+                <p id="simText">
+
+                    Tekan tombol "Kirim Perintah" untuk melihat
+                    bagaimana sebuah perintah berjalan melalui
+                    CPU secara bertahap.
+
+                </p>
+
+            </div>
+
+
+            <div class="sim-status">
+
+                <span>
+                    CPU INSTRUCTION CYCLE
+                </span>
+
+                <strong id="simStatus">
+                    READY
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             ORIGINAL SUMMARY
+        ================================================== -->
+
+        <div class="process-steps">
+
+            <div class="process-line"></div>
+
+
+            <div class="process-step">
+
+                <div class="process-circle">
+                    01
+                </div>
+
+
+                <small>
+                    FETCH
+                </small>
+
+
+                <h3>
+                    Mengambil
+                </h3>
+
+
+                <p>
+
+                    CPU mengambil instruksi dari memori
+                    yang diperlukan untuk menjalankan
+                    sebuah perintah.
+
+                </p>
+
+            </div>
+
+
+
+            <div class="process-step">
+
+                <div class="process-circle">
+                    02
+                </div>
+
+
+                <small>
+                    DECODE
+                </small>
+
+
+                <h3>
+                    Menerjemahkan
+                </h3>
+
+
+                <p>
+
+                    CPU menerjemahkan instruksi agar mengetahui
+                    operasi apa yang harus dilakukan.
+
+                </p>
+
+            </div>
+
+
+
+            <div class="process-step">
+
+                <div class="process-circle">
+                    03
+                </div>
+
+
+                <small>
+                    EXECUTE
+                </small>
+
+
+                <h3>
+                    Menjalankan
+                </h3>
+
+
+                <p>
+
+                    CPU menjalankan instruksi dan menghasilkan
+                    hasil sesuai perintah yang diterima.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="fact-strip">
+
+            <div class="fact">
+
+                <small>
+                    STEP 01
+                </small>
+
+                <strong>
+                    Instruksi diambil
+                </strong>
+
+            </div>
+
+
+            <div class="fact">
+
+                <small>
+                    STEP 02
+                </small>
+
+                <strong>
+                    Instruksi dipahami
+                </strong>
+
+            </div>
+
+
+            <div class="fact">
+
+                <small>
+                    STEP 03
+                </small>
+
+                <strong>
+                    Instruksi dijalankan
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =======================================================
+     PAGE 5
+======================================================= -->
+
+<section class="page">
+
+    <div class="section-title">
+
+        <div class="eyebrow">
+            04 / EXAMPLE
+        </div>
+
+
+        <h2>
+
+            Contohnya dalam
+
+            <span class="cyan">
+                kehidupan sehari-hari.
+            </span>
+
+        </h2>
+
+
+        <p>
+
+            Cara kerja prosesor sebenarnya terjadi setiap
+            saat ketika kita menggunakan komputer.
+
+        </p>
+
+    </div>
+
+
+
+    <div class="example">
+
+        <article class="example-box">
+
+            <div class="example-label">
+                USER ACTION
+            </div>
+
+
+            <h3>
+
+                Membuka sebuah
+                aplikasi.
+
+            </h3>
+
+
+            <p>
+
+                Ketika pengguna menekan ikon aplikasi,
+                komputer menerima perintah tersebut.
+                CPU kemudian memproses instruksi yang
+                diperlukan untuk menjalankan aplikasi.
+
+            </p>
+
+        </article>
+
+
+
+        <article class="example-box">
+
+            <div class="example-label">
+                RESULT
+            </div>
+
+
+            <h3>
+
+                Aplikasi
+                berjalan.
+
+            </h3>
+
+
+            <p>
+
+                Setelah instruksi diproses, komputer
+                menghasilkan output. Aplikasi kemudian
+                tampil dan dapat digunakan oleh pengguna.
+
+            </p>
+
+        </article>
+
+
+
+        <div class="flow">
+
+            <span>
+                PERINTAH
+            </span>
+
+            <b>→</b>
+
+            <span>
+                CPU
+            </span>
+
+            <b>→</b>
+
+            <span>
+                PROSES
+            </span>
+
+            <b>→</b>
+
+            <span>
+                HASIL
+            </span>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =======================================================
+     PAGE 6
+======================================================= -->
+
+<section class="page final">
+
+    <div class="final-content">
+
+        <div class="eyebrow">
+            05 / CONCLUSION
+        </div>
+
+
+        <h2>
+
+            Prosesor adalah
+
+            <span class="cyan">
+                pusat pemrosesan
+            </span>
+
+            komputer.
+
+        </h2>
+
+
+        <p>
+
+            Prosesor bekerja dengan menerima instruksi,
+            mengambil instruksi dari memori, menerjemahkan
+            instruksi, lalu menjalankannya. Berbagai bagian
+            di dalam CPU bekerja bersama agar komputer dapat
+            menjalankan program dan menghasilkan output sesuai
+            perintah pengguna.
+
+        </p>
+
+
+        <div class="final-flow">
+
+            <span>
+                INSTRUCTION
+            </span>
+
+            <b>→</b>
+
+            <span>
+                PROCESS
+            </span>
+
+            <b>→</b>
+
+            <span>
+                RESULT
+            </span>
+
+        </div>
+
+
+        <button
+            class="restart"
+            id="restart"
+        >
+
+            ↻ KEMBALI KE AWAL
+
+        </button>
+
+
+        <div class="completion">
+
+            <div class="completion-ring">
+
+                <svg
+                    viewBox="0 0 100 100"
+                    aria-hidden="true"
+                >
+
+                    <circle
+                        class="ring-bg"
+                        cx="50"
+                        cy="50"
+                        r="42"
+                    ></circle>
+
+                    <circle
+                        class="ring-progress"
+                        cx="50"
+                        cy="50"
+                        r="42"
+                    ></circle>
+
+                </svg>
+
+                <strong>
+                    100%
+                </strong>
+
+            </div>
+
+
+            <span>
+                LEARNING COMPLETE
+            </span>
+
+        </div>
+
+
+        <div class="credit">
+
+            ARCHIELLES FERIZA PUTRA · PERSONAL PROJECT
+
+        </div>
+
+    </div>
+
+</section>
+
+
+</main>
+
+
+
+<!-- =======================================================
+     MODAL
+======================================================= -->
+
+<div
+    class="modal"
+    id="modal"
+>
+
+    <div class="modal-box">
+
+        <button
+            class="close"
+            id="close"
+        >
+            ×
+        </button>
+
+
+        <div
+            class="modal-label"
+            id="modalLabel"
+        >
+            COMPONENT
+        </div>
+
+
+        <h2
+            id="modalTitle"
+        >
+            Component
+        </h2>
+
+
+        <p
+            id="modalText"
+        >
+            Description
+        </p>
+
+    </div>
+
+</div>
+
+
+
+<!-- =======================================================
+     NAVIGATION
+======================================================= -->
+
+<div class="navigation">
+
+    <button
+        class="nav-btn"
+        id="prev"
+        aria-label="Halaman sebelumnya"
+    >
+        ←
+    </button>
+
+
+    <div class="nav-middle">
+
+        <strong id="number">
+            01
+        </strong>
+
+
+        <div class="progress">
+
+            <div
+                class="progress-bar"
+                id="progress"
+            ></div>
+
+        </div>
+
+
+        <span class="total">
+            06
+        </span>
+
+    </div>
+
+
+    <button
+        class="nav-btn"
+        id="next"
+        aria-label="Halaman berikutnya"
+    >
+        →
+    </button>
+
+</div>
+
+
+
+<script>
+
+/* =========================================================
+   PAGE SYSTEM
+========================================================= */
+
+const pages =
+    document.querySelectorAll(".page");
+
+const next =
+    document.getElementById("next");
+
+const prev =
+    document.getElementById("prev");
+
+const start =
+    document.getElementById("start");
+
+const restart =
+    document.getElementById("restart");
+
+const number =
+    document.getElementById("number");
+
+const progress =
+    document.getElementById("progress");
+
+let current = 0;
+
+
+/* =========================================================
+   UPDATE PAGE
+========================================================= */
+
+function updatePage(){
+
+    pages.forEach(
+        function(page,index){
+
+            page.classList.toggle(
+                "active",
+                index === current
+            );
+
+            if(index === current){
+
+                page.scrollTop = 0;
+
+            }
+
+        }
+    );
+
+
+    number.textContent =
+        String(current + 1)
+        .padStart(2,"0");
+
+
+    progress.style.width =
+        (
+            ((current + 1) / pages.length)
+            * 100
+        ) + "%";
+
+}
+
+
+/* =========================================================
+   NEXT
+========================================================= */
+
+function goNext(){
+
+    if(current < pages.length - 1){
+
+        current++;
+
+        updatePage();
+
+    }
+
+}
+
+
+/* =========================================================
+   PREVIOUS
+========================================================= */
+
+function goPrev(){
+
+    if(current > 0){
+
+        current--;
+
+        updatePage();
+
+    }
+
+}
+
+
+/* =========================================================
+   BUTTON EVENTS
+========================================================= */
+
+next.addEventListener(
+    "click",
+    goNext
+);
+
+prev.addEventListener(
+    "click",
+    goPrev
+);
+
+start.addEventListener(
+    "click",
+    function(){
+
+        current = 1;
+
+        updatePage();
+
+    }
+);
+
+restart.addEventListener(
+    "click",
+    function(){
+
+        current = 0;
+
+        updatePage();
+
+    }
+);
+
+
+/* =========================================================
+   KEYBOARD
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    function(event){
+
+        if(
+            event.key === "ArrowRight" ||
+            event.key === " "
+        ){
+
+            event.preventDefault();
+
+            goNext();
+
+        }
+
+
+        if(
+            event.key === "ArrowLeft"
+        ){
+
+            goPrev();
+
+        }
+
+
+        if(
+            event.key === "Home"
+        ){
+
+            current = 0;
+
+            updatePage();
+
+        }
+
+
+        if(
+            event.key === "End"
+        ){
+
+            current = pages.length - 1;
+
+            updatePage();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   TOUCH / SWIPE
+========================================================= */
+
+let touchStartX = 0;
+
+let touchEndX = 0;
+
+
+document.addEventListener(
+    "touchstart",
+    function(event){
+
+        touchStartX =
+            event.changedTouches[0].screenX;
+
+    },
+    {
+        passive:true
+    }
+);
+
+
+document.addEventListener(
+    "touchend",
+    function(event){
+
+        touchEndX =
+            event.changedTouches[0].screenX;
+
+
+        const difference =
+            touchEndX - touchStartX;
+
+
+        if(Math.abs(difference) < 60){
+
+            return;
+
+        }
+
+
+        if(difference < 0){
+
+            goNext();
+
+        }
+        else{
+
+            goPrev();
+
+        }
+
+    },
+    {
+        passive:true
+    }
+);
+
+
+/* =========================================================
+   COMPONENT MODAL
+========================================================= */
+
+const modal =
+    document.getElementById("modal");
+
+const close =
+    document.getElementById("close");
+
+const modalLabel =
+    document.getElementById("modalLabel");
+
+const modalTitle =
+    document.getElementById("modalTitle");
+
+const modalText =
+    document.getElementById("modalText");
+
+
+const data = {
+
+    alu:{
+        label:
+            "01 / ARITHMETIC LOGIC UNIT",
+
+        title:
+            "ALU",
+
+        text:
+            "ALU atau Arithmetic Logic Unit merupakan bagian CPU yang melakukan operasi aritmatika dan logika. Contohnya adalah penjumlahan, pengurangan, perbandingan, serta operasi logika tertentu."
+    },
+
+
+    control:{
+        label:
+            "02 / CONTROL UNIT",
+
+        title:
+            "Control Unit",
+
+        text:
+            "Control Unit bertugas mengatur jalannya instruksi di dalam CPU. Bagian ini memberikan arahan agar instruksi dapat diproses oleh bagian CPU yang sesuai dalam urutan yang benar."
+    },
+
+
+    register:{
+        label:
+            "03 / REGISTER",
+
+        title:
+            "Register",
+
+        text:
+            "Register merupakan tempat penyimpanan kecil dan sangat cepat yang berada di dalam CPU. Register digunakan untuk menyimpan data atau instruksi yang sedang digunakan dalam proses."
+    },
+
+
+    cache:{
+        label:
+            "04 / CPU CACHE",
+
+        title:
+            "Cache",
+
+        text:
+            "Cache merupakan memori berkecepatan tinggi yang menyimpan data atau instruksi yang sering digunakan. Tujuannya adalah membantu CPU memperoleh data tertentu dengan lebih cepat."
+    }
+
+};
+
+
+/* =========================================================
+   OPEN MODAL
+========================================================= */
+
+document
+    .querySelectorAll(".component")
+    .forEach(
+        function(button){
+
+            button.addEventListener(
+                "click",
+                function(){
+
+                    const type =
+                        button.dataset.type;
+
+
+                    if(!data[type]){
+
+                        return;
+
+                    }
+
+
+                    modalLabel.textContent =
+                        data[type].label;
+
+
+                    modalTitle.textContent =
+                        data[type].title;
+
+
+                    modalText.textContent =
+                        data[type].text;
+
+
+                    modal.classList.add(
+                        "show"
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+/* =========================================================
+   CLOSE MODAL
+========================================================= */
+
+function closeModal(){
+
+    modal.classList.remove(
+        "show"
+    );
+
+}
+
+
+close.addEventListener(
+    "click",
+    closeModal
+);
+
+
+modal.addEventListener(
+    "click",
+    function(event){
+
+        if(
+            event.target === modal
+        ){
+
+            closeModal();
+
+        }
+
+    }
+);
+
+
+document.addEventListener(
+    "keydown",
+    function(event){
+
+        if(
+            event.key === "Escape"
+        ){
+
+            closeModal();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   WOW EFFECTS
+========================================================= */
+
+const particleLayer =
+    document.querySelector(".particles");
+
+if(particleLayer){
+
+    for(let i=0;i<34;i++){
+
+        const p =
+            document.createElement("i");
+
+        p.className =
+            "particle";
+
+        p.style.left =
+            Math.random()*100 + "%";
+
+        p.style.top =
+            (70 + Math.random()*40) + "%";
+
+        p.style.animationDuration =
+            (7 + Math.random()*12) + "s";
+
+        p.style.animationDelay =
+            (-Math.random()*12) + "s";
+
+        p.style.transform =
+            `scale(${0.5 + Math.random()*1.5})`;
+
+        particleLayer.appendChild(p);
+
+    }
+
+}
+
+
+/* =========================================================
+   CURSOR GLOW
+========================================================= */
+
+const cursorGlow =
+    document.querySelector(".cursor-glow");
+
+document.addEventListener(
+    "pointermove",
+    function(e){
+
+        if(cursorGlow){
+
+            cursorGlow.style.left =
+                e.clientX + "px";
+
+            cursorGlow.style.top =
+                e.clientY + "px";
+
+            cursorGlow.style.opacity =
+                "1";
+
+        }
+
+
+        const card =
+            e.target.closest(".component");
+
+
+        if(card){
+
+            const r =
+                card.getBoundingClientRect();
+
+            card.style.setProperty(
+                "--mx",
+                ((e.clientX-r.left)/r.width*100) + "%"
+            );
+
+            card.style.setProperty(
+                "--my",
+                ((e.clientY-r.top)/r.height*100) + "%"
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   CLICK RIPPLE
+========================================================= */
+
+document.addEventListener(
+    "click",
+    function(e){
+
+        if(e.target.closest("button")){
+
+            const ripple =
+                document.createElement("span");
+
+            ripple.className =
+                "ripple";
+
+            ripple.style.left =
+                e.clientX + "px";
+
+            ripple.style.top =
+                e.clientY + "px";
+
+            document.body.appendChild(
+                ripple
+            );
+
+            setTimeout(
+                () => ripple.remove(),
+                700
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   LIVE CPU TELEMETRY
+========================================================= */
+
+const cpuLoad =
+    document.getElementById("cpuLoad");
+
+const bars =
+    document.querySelectorAll(
+        "#telemetryBars i"
+    );
+
+function updateTelemetry(){
+
+    const load =
+        Math.floor(
+            34 + Math.random()*48
+        );
+
+    if(cpuLoad){
+
+        cpuLoad.textContent =
+            load + "%";
+
+    }
+
+    bars.forEach(
+        function(bar,i){
+
+            const h =
+                Math.max(
+                    12,
+                    Math.min(
+                        95,
+                        load +
+                        (Math.random()*42-21) +
+                        Math.sin(i)*12
+                    )
+                );
+
+            bar.style.height =
+                h + "%";
+
+        }
+    );
+
+}
+
+setInterval(
+    updateTelemetry,
+    900
+);
+
+updateTelemetry();
+
+
+/* =========================================================
+   PROCESS STEP PULSE
+========================================================= */
+
+const processSteps =
+    document.querySelectorAll(
+        ".process-step"
+    );
+
+let processPulse = 0;
+
+function pulseProcess(){
+
+    processSteps.forEach(
+        function(step,i){
+
+            step.style.transition =
+                "transform .35s, filter .35s";
+
+            step.style.filter =
+                i === processPulse
+                ? "brightness(1.35)"
+                : "brightness(.72)";
+
+            step.style.transform =
+                i === processPulse
+                ? "translateY(-7px)"
+                : "translateY(0)";
+
+
+            const circle =
+                step.querySelector(
+                    ".process-circle"
+                );
+
+
+            if(circle){
+
+                circle.style.boxShadow =
+                    i === processPulse
+                    ? "0 0 32px rgba(103,232,239,.32)"
+                    : "0 0 30px rgba(103,232,239,.06)";
+
+            }
+
+        }
+    );
+
+
+    processPulse =
+        (processPulse + 1)
+        % processSteps.length;
+
+}
+
+setInterval(
+    pulseProcess,
+    1300
+);
+
+pulseProcess();
+
+
+/* =========================================================
+   CPU DOUBLE CLICK ENERGY
+========================================================= */
+
+const cpuVisual =
+    document.querySelector(".cpu");
+
+if(cpuVisual){
+
+    cpuVisual.addEventListener(
+        "dblclick",
+        function(){
+
+            cpuVisual.animate(
+                [
+                    {
+                        filter:"brightness(1)",
+                        transform:
+                            "translateY(0) rotateX(53deg) rotateZ(-35deg)"
+                    },
+                    {
+                        filter:"brightness(1.8)",
+                        transform:
+                            "translateY(-10px) rotateX(53deg) rotateZ(-35deg)"
+                    },
+                    {
+                        filter:"brightness(1)",
+                        transform:
+                            "translateY(0) rotateX(53deg) rotateZ(-35deg)"
+                    }
+                ],
+                {
+                    duration:550,
+                    easing:"ease-out"
+                }
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   CURVED FETCH → DECODE → EXECUTE SIMULATION
+========================================================= */
+
+const runSimulation =
+    document.getElementById(
+        "runSimulation"
+    );
+
+const simNodes =
+    document.querySelectorAll(
+        ".sim-node"
+    );
+
+const simTitle =
+    document.getElementById(
+        "simTitle"
+    );
+
+const simText =
+    document.getElementById(
+        "simText"
+    );
+
+const simStatus =
+    document.getElementById(
+        "simStatus"
+    );
+
+const simExplanation =
+    document.getElementById(
+        "simExplanation"
+    );
+
+
+/* =========================================================
+   ROUTES
+========================================================= */
+
+const desktopPath =
+    document.getElementById(
+        "desktopRoutePath"
+    );
+
+const mobilePath =
+    document.getElementById(
+        "mobileRoutePath"
+    );
+
+const desktopProgress =
+    document.getElementById(
+        "desktopProgressPath"
+    );
+
+const mobileProgress =
+    document.getElementById(
+        "mobileProgressPath"
+    );
+
+const commandPacketDesktop =
+    document.getElementById(
+        "commandPacketDesktop"
+    );
+
+const commandPacketMobile =
+    document.getElementById(
+        "commandPacketMobile"
+    );
+
+
+/*
+    Setiap tahap memiliki penjelasan.
+    Penjelasan baru muncul setelah
+    titik benar-benar sampai.
+*/
+
+const simulationData = [
+
+    {
+        title:
+            "Kamu memberikan perintah.",
+
+        text:
+            "Misalnya kamu menekan ikon sebuah aplikasi. Perintah dari pengguna diterima oleh komputer dan menjadi instruksi yang perlu diproses.",
+
+        status:
+            "COMMAND RECEIVED"
+    },
+
+
+    {
+        title:
+            "FETCH — CPU mengambil instruksi.",
+
+        text:
+            "CPU mengambil instruksi yang diperlukan dari memori. Pada tahap ini, instruksi baru diambil terlebih dahulu dan belum dijalankan.",
+
+        status:
+            "FETCHING INSTRUCTION"
+    },
+
+
+    {
+        title:
+            "DECODE — CPU memahami instruksi.",
+
+        text:
+            "Control Unit menerjemahkan instruksi yang sudah diambil agar CPU mengetahui apa yang harus dilakukan dan bagian mana yang perlu bekerja.",
+
+        status:
+            "DECODING INSTRUCTION"
+    },
+
+
+    {
+        title:
+            "EXECUTE — CPU menjalankan instruksi.",
+
+        text:
+            "CPU kemudian menjalankan instruksi. Bagian seperti ALU dapat melakukan operasi yang diperlukan, sementara bagian lain membantu mengatur dan menyimpan data selama proses berlangsung.",
+
+        status:
+            "EXECUTING"
+    },
+
+
+    {
+        title:
+            "RESULT — Perintah menghasilkan sesuatu.",
+
+        text:
+            "Setelah instruksi selesai diproses, hasilnya diteruskan ke sistem. Dalam contoh ini, aplikasi akhirnya terbuka dan siap digunakan.",
+
+        status:
+            "PROCESS COMPLETE"
+    }
+
+];
+
+
+let simulationRunning = false;
+
+let currentSimulationStep = 0;
+
+
+/* =========================================================
+   SELECT ACTIVE ROUTE
+========================================================= */
+
+function getRoute(){
+
+    if(window.innerWidth <= 700){
+
+        return {
+            path:mobilePath,
+            progress:mobileProgress,
+            packet:commandPacketMobile,
+            desktop:false
+        };
+
+    }
+
+    return {
+        path:desktopPath,
+        progress:desktopProgress,
+        packet:commandPacketDesktop,
+        desktop:true
+    };
+
+}
+
+
+/* =========================================================
+   NODE COORDINATES
+========================================================= */
+
+const desktopTargets = [
+
+    {x:100,y:88},
+    {x:300,y:184},
+    {x:500,y:76},
+    {x:700,y:178},
+    {x:900,y:88}
+
+];
+
+const mobileTargets = [
+
+    {x:110,y:55},
+    {x:110,y:215},
+    {x:110,y:390},
+    {x:110,y:565},
+    {x:110,y:755}
+
+];
+
+
+/* =========================================================
+   FIND NEAREST POINT ON CURVED PATH
+========================================================= */
+
+function findPathPosition(
+    path,
+    target
+){
+
+    if(!path){
+
+        return 0;
+
+    }
+
+
+    const total =
+        path.getTotalLength();
+
+
+    let bestLength = 0;
+
+    let bestDistance =
+        Infinity;
+
+
+    const samples = 350;
+
+
+    for(
+        let i=0;
+        i<=samples;
+        i++
+    ){
+
+        const length =
+            total *
+            (i / samples);
+
+
+        const point =
+            path.getPointAtLength(
+                length
+            );
+
+
+        const dx =
+            point.x - target.x;
+
+        const dy =
+            point.y - target.y;
+
+
+        const distance =
+            dx*dx + dy*dy;
+
+
+        if(
+            distance <
+            bestDistance
+        ){
+
+            bestDistance =
+                distance;
+
+            bestLength =
+                length;
+
+        }
+
+    }
+
+
+    return bestLength;
+
+}
+
+
+/* =========================================================
+   GET TARGET LENGTHS
+========================================================= */
+
+function getTargetLengths(){
+
+    const route =
+        getRoute();
+
+
+    const targets =
+        route.desktop
+        ? desktopTargets
+        : mobileTargets;
+
+
+    return targets.map(
+        function(target){
+
+            return findPathPosition(
+                route.path,
+                target
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   PLACE PACKET
+========================================================= */
+
+function placePacket(
+    packet,
+    path,
+    length
+){
+
+    if(!packet || !path){
+
+        return;
+
+    }
+
+
+    const point =
+        path.getPointAtLength(
+            length
+        );
+
+
+    packet.setAttribute(
+        "transform",
+        `translate(${point.x} ${point.y})`
+    );
+
+}
+
+
+/* =========================================================
+   SHOW PACKET
+========================================================= */
+
+function showPacket(){
+
+    if(commandPacketDesktop){
+
+        commandPacketDesktop.classList.add(
+            "visible"
+        );
+
+    }
+
+
+    if(commandPacketMobile){
+
+        commandPacketMobile.classList.add(
+            "visible"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   HIDE PACKET
+========================================================= */
+
+function hidePacket(){
+
+    if(commandPacketDesktop){
+
+        commandPacketDesktop.classList.remove(
+            "visible"
+        );
+
+    }
+
+
+    if(commandPacketMobile){
+
+        commandPacketMobile.classList.remove(
+            "visible"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   UPDATE PROGRESS
+========================================================= */
+
+function updateRouteProgress(
+    step
+){
+
+    const route =
+        getRoute();
+
+
+    const lengths =
+        getTargetLengths();
+
+
+    const total =
+        route.path.getTotalLength();
+
+
+    const currentLength =
+        lengths[step];
+
+
+    route.progress.style.strokeDasharray =
+        total;
+
+
+    route.progress.style.strokeDashoffset =
+        total - currentLength;
+
+}
+
+
+/* =========================================================
+   CHANGE EXPLANATION
+========================================================= */
+
+function showExplanation(
+    step
+){
+
+    const info =
+        simulationData[step];
+
+
+    simExplanation.classList.remove(
+        "changing"
+    );
+
+
+    /*
+        Memaksa browser membaca ulang
+        animasi supaya setiap tahap
+        tetap memiliki efek masuk.
+    */
+
+    void simExplanation.offsetWidth;
+
+
+    simTitle.textContent =
+        info.title;
+
+    simText.textContent =
+        info.text;
+
+    simStatus.textContent =
+        info.status;
+
+
+    simExplanation.classList.add(
+        "changing"
+    );
+
+}
+
+
+/* =========================================================
+   ACTIVATE NODE
+========================================================= */
+
+function activateNode(
+    step
+){
+
+    simNodes.forEach(
+        function(node,index){
+
+            node.classList.remove(
+                "active",
+                "done"
+            );
+
+
+            if(index < step){
+
+                node.classList.add(
+                    "done"
+                );
+
+            }
+
+
+            if(index === step){
+
+                node.classList.add(
+                    "active"
+                );
+
+            }
+
+        }
+    );
+
+
+    currentSimulationStep =
+        step;
+
+
+    updateRouteProgress(
+        step
+    );
+
+
+    /*
+        Penjelasan hanya berubah
+        ketika titik sudah tiba.
+    */
+
+    showExplanation(
+        step
+    );
+
+}
+
+
+/* =========================================================
+   ANIMATE PACKET ALONG CURVE
+========================================================= */
+
+function movePacketToStep(
+    step,
+    duration
+){
+
+    return new Promise(
+        function(resolve){
+
+            const route =
+                getRoute();
+
+
+            const path =
+                route.path;
+
+
+            const packet =
+                route.packet;
+
+
+            const targets =
+                getTargetLengths();
+
+
+            const targetLength =
+                targets[step];
+
+
+            /*
+                Cari posisi awal
+                berdasarkan tahap sebelumnya.
+            */
+
+            const startLength =
+                step === 0
+                ? 0
+                : targets[step - 1];
+
+
+            const startTime =
+                performance.now();
+
+
+            function animate(
+                now
+            ){
+
+                const elapsed =
+                    now -
+                    startTime;
+
+
+                let progress =
+                    elapsed /
+                    duration;
+
+
+                if(progress > 1){
+
+                    progress = 1;
+
+                }
+
+
+                /*
+                    Ease in-out.
+                    Membuat gerakan terasa
+                    seperti data benar-benar
+                    bergerak, bukan teleport.
+                */
+
+                const eased =
+                    progress < .5
+                    ? 2 * progress * progress
+                    : 1 -
+                      Math.pow(
+                          -2 * progress + 2,
+                          2
+                      ) / 2;
+
+
+                const currentLength =
+                    startLength +
+                    (
+                        targetLength -
+                        startLength
+                    ) *
+                    eased;
+
+
+                placePacket(
+                    packet,
+                    path,
+                    currentLength
+                );
+
+
+                if(progress < 1){
+
+                    requestAnimationFrame(
+                        animate
+                    );
+
+                }
+                else{
+
+                    /*
+                        Pastikan benar-benar
+                        berada tepat di node.
+                    */
+
+                    placePacket(
+                        packet,
+                        path,
+                        targetLength
+                    );
+
+
+                    resolve();
+
+                }
+
+            }
+
+
+            requestAnimationFrame(
+                animate
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   DELAY
+========================================================= */
+
+function wait(ms){
+
+    return new Promise(
+        function(resolve){
+
+            setTimeout(
+                resolve,
+                ms
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   RUN SIMULATION
+========================================================= */
+
+async function runCpuSimulation(){
+
+    if(simulationRunning){
+
+        return;
+
+    }
+
+
+    simulationRunning =
+        true;
+
+
+    runSimulation.disabled =
+        true;
+
+    runSimulation.textContent =
+        "MEMPROSES...";
+
+
+    showPacket();
+
+
+    /*
+        Reset route.
+    */
+
+    simNodes.forEach(
+        function(node){
+
+            node.classList.remove(
+                "active",
+                "done"
+            );
+
+        }
+    );
+
+
+    const route =
+        getRoute();
+
+
+    const lengths =
+        getTargetLengths();
+
+
+    /*
+        Mulai dari awal.
+    */
+
+    placePacket(
+        route.packet,
+        route.path,
+        lengths[0]
+    );
+
+
+    updateRouteProgress(
+        0
+    );
+
+
+    /*
+        USER
+
+        Titik sudah berada di
+        perintah pengguna.
+    */
+
+    activateNode(
+        0
+    );
+
+
+    /*
+        Berhenti sebentar supaya
+        pengguna sempat membaca.
+    */
+
+    await wait(2200);
+
+
+    /*
+        FETCH
+
+        Titik mulai berjalan
+        mengikuti jalur belok.
+    */
+
+    await movePacketToStep(
+        1,
+        2800
+    );
+
+
+    /*
+        Penjelasan baru berubah
+        setelah titik tiba.
+    */
+
+    activateNode(
+        1
+    );
+
+
+    await wait(2100);
+
+
+    /*
+        DECODE
+    */
+
+    await movePacketToStep(
+        2,
+        2800
+    );
+
+
+    activateNode(
+        2
+    );
+
+
+    await wait(2200);
+
+
+    /*
+        EXECUTE
+    */
+
+    await movePacketToStep(
+        3,
+        2800
+    );
+
+
+    activateNode(
+        3
+    );
+
+
+    await wait(2300);
+
+
+    /*
+        RESULT
+    */
+
+    await movePacketToStep(
+        4,
+        2800
+    );
+
+
+    activateNode(
+        4
+    );
+
+
+    await wait(2500);
+
+
+    /*
+        SELESAI
+    */
+
+    simStatus.textContent =
+        "PROCESS COMPLETE";
+
+
+    runSimulation.disabled =
+        false;
+
+    runSimulation.textContent =
+        "ULANGI PERINTAH";
+
+
+    simulationRunning =
+        false;
+
+}
+
+
+/* =========================================================
+   BUTTON
+========================================================= */
+
+if(runSimulation){
+
+    runSimulation.addEventListener(
+        "click",
+        runCpuSimulation
+    );
+
+}
+
+
+/* =========================================================
+   RESPONSIVE ROUTE
+========================================================= */
+
+window.addEventListener(
+    "resize",
+    function(){
+
+        /*
+            Jangan memindahkan titik
+            secara aneh ketika sedang
+            berjalan.
+
+            Cukup posisikan ulang
+            pada tahap terakhir.
+        */
+
+        const route =
+            getRoute();
+
+
+        const lengths =
+            getTargetLengths();
+
+
+        const step =
+            currentSimulationStep;
+
+
+        if(
+            route.path &&
+            route.packet &&
+            lengths[step] !== undefined
+        ){
+
+            placePacket(
+                route.packet,
+                route.path,
+                lengths[step]
+            );
+
+            updateRouteProgress(
+                step
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   INITIAL SIMULATION STATE
+========================================================= */
+
+(function(){
+
+    const route =
+        getRoute();
+
+
+    const lengths =
+        getTargetLengths();
+
+
+    if(
+        route.path &&
+        route.packet
+    ){
+
+        placePacket(
+            route.packet,
+            route.path,
+            lengths[0]
+        );
+
+    }
+
+
+    simNodes.forEach(
+        function(node){
+
+            node.classList.remove(
+                "active",
+                "done"
+            );
+
+        }
+    );
+
+
+    simNodes[0].classList.add(
+        "active"
+    );
+
+
+    updateRouteProgress(
+        0
+    );
+
+})();
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+updatePage();
+
+
+/* =========================================================
+   SIMULASI CPU SEDERHANA — PELAN & MUDAH DIPAHAMI
+========================================================= */
+const simpleCommandInput = document.getElementById("simpleCommandInput");
+const simpleCommandText = document.getElementById("simpleCommandText");
+const simpleCommandChips = document.querySelectorAll(".simple-command-chip");
+const simpleModules = document.querySelectorAll(".simple-module[data-simple-step]");
+const simpleLogs = document.querySelectorAll("[data-simple-log]");
+const simplePacket = document.getElementById("simpleDataPacket");
+const simpleProgress = document.getElementById("simpleFlowProgress");
+const simpleStageLabel = document.getElementById("simpleStageLabel");
+const simpleStageTitle = document.getElementById("simpleStageTitle");
+const simpleStageText = document.getElementById("simpleStageText");
+const simpleStageTip = document.getElementById("simpleStageTip");
+
+const simpleSteps = [
+    {
+        label:"LANGKAH 0 · INPUT",
+        title:"Kamu memberikan perintah.",
+        text:"Kamu memilih aplikasi atau memberikan tugas. Komputer menerima perintah tersebut untuk diproses.",
+        tip:"Kamu = orang yang memberi tugas kepada komputer."
+    },
+    {
+        label:"LANGKAH 1 · FETCH",
+        title:"FETCH = mengambil instruksi.",
+        text:"CPU mengambil instruksi yang dibutuhkan dari memori. CPU belum menjalankan instruksi itu; baru mengambilnya.",
+        tip:"Bayangkan seperti mengambil lembar tugas dari rak."
+    },
+    {
+        label:"LANGKAH 2 · BUFFER",
+        title:"BUFFER = tempat menunggu sementara.",
+        text:"Instruksi atau data bisa ditaruh sebentar di tempat yang cepat agar CPU lebih mudah menggunakannya saat dibutuhkan.",
+        tip:"Bayangkan seperti meja kecil untuk menaruh barang sebelum dipakai."
+    },
+    {
+        label:"LANGKAH 3 · DECODE",
+        title:"DECODE = memahami instruksi.",
+        text:"Control Unit membaca instruksi dan menentukan apa yang harus dilakukan serta bagian CPU mana yang perlu bekerja.",
+        tip:"Bayangkan seperti membaca soal lalu memahami apa yang diminta."
+    },
+    {
+        label:"LANGKAH 4 · EXECUTE",
+        title:"EXECUTE = menjalankan instruksi.",
+        text:"Sekarang CPU melakukan tugasnya. Misalnya menghitung angka, membandingkan data, atau menjalankan bagian dari sebuah aplikasi.",
+        tip:"Bayangkan seperti mulai mengerjakan soal setelah tahu caranya."
+    },
+    {
+        label:"LANGKAH 5 · RESULT",
+        title:"RESULT = hasilnya keluar.",
+        text:"Setelah proses selesai, hasilnya diteruskan ke bagian komputer yang membutuhkan. Contohnya aplikasi mulai terbuka.",
+        tip:"Tugas selesai dan hasilnya bisa digunakan."
+    }
+];
+
+let simpleRunning = false;
+let simpleRunToken = 0;
+
+function setSimpleCommand(value){
+    if(simpleCommandInput) simpleCommandInput.value=value;
+    if(simpleCommandText) simpleCommandText.textContent=value || "Buka aplikasi";
+    simpleCommandChips.forEach(chip=>chip.classList.toggle("selected",chip.dataset.simpleCommand===value));
+    if(commandDisplay) commandDisplay.textContent='"'+(value || "Buka aplikasi")+'"';
+}
+
+simpleCommandChips.forEach(chip=>chip.addEventListener("click",()=>setSimpleCommand(chip.dataset.simpleCommand)));
+if(simpleCommandInput){
+    simpleCommandInput.addEventListener("input",()=>setSimpleCommand(simpleCommandInput.value));
+}
+
+function showSimpleStep(index){
+    const step=simpleSteps[index];
+    simpleModules.forEach((m,i)=>{
+        m.classList.toggle("active",i===index);
+        m.classList.toggle("done",i<index);
+    });
+    simpleLogs.forEach((log,i)=>log.classList.toggle("active",i===index));
+    if(simpleStageLabel) simpleStageLabel.textContent=step.label;
+    if(simpleStageTitle) simpleStageTitle.textContent=step.title;
+    if(simpleStageText) simpleStageText.textContent=step.text;
+    if(simpleStageTip) simpleStageTip.innerHTML="<b>Gampangnya:</b> "+step.tip;
+    if(simpleProgress){
+        const percent=(index/5)*86;
+        simpleProgress.style.width=percent+"%";
+    }
+    if(simplePacket){
+        const positions=[7,24.2,41.4,58.6,75.8,93];
+        simplePacket.style.left=positions[index]+"%";
+        simplePacket.classList.add("show");
+    }
+}
+
+function waitSimple(ms,token){
+    return new Promise(resolve=>setTimeout(()=>resolve(token===simpleRunToken),ms));
+}
+
+async function runSimpleCpu(){
+    if(simpleRunning) return;
+    simpleRunning=true;
+    const token=++simpleRunToken;
+
+    // Waktunya dibuat hampir sama dengan jalur simulasi utama,
+    // supaya penjelasan dan titik cahaya bergerak bersama.
+    showSimpleStep(0);
+    if(!(await waitSimple(2200,token))) return;
+
+    const delays=[2800,2100,2800,2200,2800,2500];
+    for(let i=1;i<simpleSteps.length;i++){
+        if(token!==simpleRunToken) return;
+        showSimpleStep(i);
+        if(!(await waitSimple(delays[i-1],token))) return;
+    }
+    simpleRunning=false;
+}
+
+if(runSimulation){
+    runSimulation.addEventListener("click",runSimpleCpu);
+}
+
+showSimpleStep(0);
+
+</script>
+
+
+<!-- =======================================================
+     PAGE 7 — QUIZ
+======================================================= -->
+<section class="page">
+    <div class="section-title">
+        <div class="eyebrow">05 / QUIZ</div>
+        <h2>Sudah paham? <span class="cyan">Coba kuis.</span></h2>
+        <p>Jawab beberapa soal dari materi yang sudah kamu pelajari. Kalau salah, tidak apa-apa — kamu bisa mencoba lagi.</p>
+    </div>
+
+    <div class="quiz-wrap">
+        <div class="quiz-card" id="quizCard">
+            <div class="quiz-progress">
+                <span id="quizNumber">SOAL 1 DARI 6</span>
+                <span id="quizScoreSmall">BENAR: 0</span>
+            </div>
+            <div class="quiz-progress-bar"><div class="quiz-progress-fill" id="quizProgressFill"></div></div>
+
+            <h3 class="quiz-question" id="quizQuestion"></h3>
+            <div class="quiz-answers" id="quizAnswers"></div>
+            <div class="quiz-feedback" id="quizFeedback">Pilih satu jawaban. Setelah itu akan muncul penjelasan singkatnya.</div>
+            <button class="quiz-next" id="quizNext" disabled>SOAL BERIKUTNYA →</button>
+
+            <div class="quiz-score" id="quizScore">
+                <div class="quiz-score-badge" id="quizScoreBadge">0/6</div>
+                <h3 id="quizResultTitle">Selesai!</h3>
+                <p id="quizResultText"></p>
+                <div class="quiz-surprise" id="quizSurprise">
+                    <strong>✦ CPU CORE UNLOCKED!</strong>
+                    <p>Kamu berhasil menjawab semuanya dengan benar. Inti CPU menyala sebagai hadiah kecil karena kamu sudah memahami alurnya.</p>
+                </div>
+                <button class="quiz-retry" id="quizRetry">COBA LAGI</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+</body>
+</html>
